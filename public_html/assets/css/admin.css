@@ -32,6 +32,8 @@ body { margin: 0; background: var(--a-bg); color: var(--a-text); font: 15px/1.55
   background: #d99400; color: #1c1200; font-weight: 700; cursor: pointer;
 }
 .auth-error { background: #fdecea; color: var(--a-error); border-radius: var(--a-radius); padding: 10px 12px; margin-bottom: 14px; font-size: 0.88rem; }
+.auth-credit { display: block; text-align: center; margin-top: 22px; color: var(--a-muted); font-size: 0.8rem; font-weight: 600; }
+.auth-credit:hover { color: var(--a-accent); }
 
 .admin-topbar {
   display: flex; justify-content: space-between; align-items: center;
@@ -39,6 +41,8 @@ body { margin: 0; background: var(--a-bg); color: var(--a-text); font: 15px/1.55
 }
 .admin-brand { font-weight: 700; }
 .admin-topbar-actions a { color: #f5b301; margin-left: 18px; font-size: 0.9rem; }
+.admin-topbar-actions a.admin-credit { color: #8b93a1; font-weight: 600; }
+.admin-topbar-actions a.admin-credit:hover { color: #f5b301; }
 
 .admin-shell { display: flex; min-height: calc(100vh - 52px); }
 .admin-tabs {

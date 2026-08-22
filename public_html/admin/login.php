@@ -67,6 +67,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     <label>Şifre<input type="password" name="password" required></label>
     <button type="submit">Giriş Yap</button>
   </form>
+  <a class="auth-credit" href="https://cicibyte.com" target="_blank" rel="noopener">CiciByte Teknoloji</a>
 </div>
 </body>
 </html>

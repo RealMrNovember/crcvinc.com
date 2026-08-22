@@ -36,6 +36,7 @@ function renderAdminPanel(array $site, bool $saved, ?string $error): void
   <div class="admin-topbar-actions">
     <a href="/" target="_blank" rel="noopener">Siteyi Görüntüle ↗</a>
     <a href="/admin/logout.php">Çıkış Yap</a>
+    <a class="admin-credit" href="https://cicibyte.com" target="_blank" rel="noopener">CiciByte Teknoloji</a>
   </div>
 </header>
 <div class="admin-shell">
@@ -256,7 +257,9 @@ function renderTextsTab(array $site): void
 {
     $home = $site['home'];
     $contact = $site['contact'];
+    $founder = $site['founder'] ?? [];
     $safety = repeatRows($site['safety'], 4);
+    $hours = repeatRows($site['hours'] ?? [], 7);
     ?>
     <h2>Bölüm Başlıkları</h2>
     <p class="admin-hint">Ana sayfadaki bölüm başlıkları, güvenlik şeridi ve iletişim sayfası metinlerini buradan değiştirebilirsiniz.</p>
@@ -310,6 +313,26 @@ function renderTextsTab(array $site): void
           <label>İletişim bilgisi kutusu başlığı<input type="text" name="contact_info_title" value="<?= e($contact['info_title']) ?>"></label>
           <label>Form kutusu başlığı<input type="text" name="contact_form_title" value="<?= e($contact['form_title']) ?>"></label>
         </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Kurucu</legend>
+        <p class="admin-hint">Kurumsal sayfasında görünür. Boş bırakılırsa kurucu kartı gösterilmez.</p>
+        <div class="admin-row">
+          <label>Ad Soyad<input type="text" name="founder_name" value="<?= e($founder['name'] ?? '') ?>"></label>
+          <label>Unvan<input type="text" name="founder_title" value="<?= e($founder['title'] ?? '') ?>"></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Çalışma Saatleri</legend>
+        <p class="admin-hint">İletişim sayfasında listelenir. Boş bırakılan satırlar kaydedilirken silinir (örn. kapalı gün için "Kapalı" yazın).</p>
+        <?php foreach ($hours as $item): ?>
+        <div class="admin-row">
+          <label>Gün<input type="text" name="hours_day[]" value="<?= e($item['day'] ?? '') ?>"></label>
+          <label>Saat<input type="text" name="hours_value[]" value="<?= e($item['value'] ?? '') ?>"></label>
+        </div>
+        <?php endforeach; ?>
       </fieldset>
 
       <button type="submit" class="admin-save">Kaydet</button>

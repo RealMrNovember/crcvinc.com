@@ -35,7 +35,7 @@ switch ($path) {
         break;
 
     case '/kurumsal':
-        renderPage('page', [
+        renderPage('about', [
             'pageTitle' => $site['pages']['kurumsal']['title'] ?? 'Kurumsal',
             'page' => $site['pages']['kurumsal'] ?? [],
         ]);

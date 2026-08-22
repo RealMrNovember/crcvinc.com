@@ -16,6 +16,13 @@ function assetUrl(string $path): string
     return $path . ($mtime !== false ? '?v=' . $mtime : '');
 }
 
+/** UTF-8 metnin ilk karakterini döndürür — mbstring eklentisine bağımlı değildir. */
+function firstChar(string $text): string
+{
+    preg_match('/^./u', $text, $matches);
+    return $matches[0] ?? '';
+}
+
 /** HTML çıktısı için güvenli kaçış. */
 function e(?string $value): string
 {

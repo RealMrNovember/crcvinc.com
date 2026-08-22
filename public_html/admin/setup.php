@@ -59,6 +59,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     <label>Şifre (tekrar)<input type="password" name="password_confirm" required minlength="8"></label>
     <button type="submit">Paneli Oluştur</button>
   </form>
+  <a class="auth-credit" href="https://cicibyte.com" target="_blank" rel="noopener">CiciByte Teknoloji</a>
 </div>
 </body>
 </html>

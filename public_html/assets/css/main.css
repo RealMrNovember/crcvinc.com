@@ -281,6 +281,23 @@ a { color: var(--accent); text-decoration: none; }
 .prose { max-width: 760px; }
 .prose p { color: var(--text-muted); }
 
+/* ---------- Kurumsal / Kurucu kartı ---------- */
+.about-grid { display: grid; grid-template-columns: 1fr auto; gap: 48px; align-items: start; }
+.founder-card {
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 32px 36px; min-width: 220px;
+}
+.founder-avatar {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: var(--accent); color: #12161d;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--heading); font-weight: 800; font-size: 1.6rem;
+  margin-bottom: 10px;
+}
+.founder-name { font-family: var(--heading); font-weight: 700; font-size: 1.15rem; text-transform: uppercase; letter-spacing: 0.02em; }
+.founder-title { color: var(--accent); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+
 /* ---------- İletişim ---------- */
 .contact-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 48px; }
 .contact-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 18px; }
@@ -288,6 +305,15 @@ a { color: var(--accent); text-decoration: none; }
 .contact-list strong { text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.75rem; color: var(--text-muted); }
 .contact-map { margin-top: 26px; border-radius: var(--radius); overflow: hidden; }
 .contact-map iframe { width: 100%; height: 260px; border: 0; display: block; }
+
+.contact-hours-title {
+  margin: 30px 0 12px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent);
+}
+.hours-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; font-size: 0.92rem; }
+.hours-list li { display: flex; justify-content: space-between; gap: 12px; padding-block: 4px; border-bottom: 1px dashed var(--line); }
+.hours-list li:last-child { border-bottom: 0; }
+.hours-list li span:first-child { color: var(--text-muted); }
+.hours-list li span:last-child { font-weight: 600; }
 
 .contact-form { display: grid; gap: 16px; }
 .contact-form label { display: grid; gap: 6px; font-weight: 600; font-size: 0.9rem; }
@@ -354,6 +380,8 @@ a { color: var(--accent); text-decoration: none; }
 @media (max-width: 900px) {
   .counters-grid { grid-template-columns: repeat(2, 1fr); }
   .contact-grid { grid-template-columns: 1fr; }
+  .about-grid { grid-template-columns: 1fr; }
+  .founder-card { align-self: start; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
 
   .nav-toggle { display: block; }

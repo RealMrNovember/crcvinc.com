@@ -15,6 +15,14 @@
         <li><strong>E-posta</strong><a href="mailto:<?= e($settings['email']) ?>"><?= e($settings['email']) ?></a></li>
         <li><strong>Adres</strong><span><?= e($settings['address']) ?></span></li>
       </ul>
+      <?php if (!empty($site['hours'])): ?>
+      <h3 class="contact-hours-title">Çalışma Saatleri</h3>
+      <ul class="hours-list">
+        <?php foreach ($site['hours'] as $item): ?>
+        <li><span><?= e($item['day']) ?></span><span><?= e($item['value']) ?></span></li>
+        <?php endforeach; ?>
+      </ul>
+      <?php endif; ?>
       <?php if (!empty($settings['map_embed'])): ?>
       <div class="contact-map"><?= $settings['map_embed'] /* admin panelden gelen iframe */ ?></div>
       <?php endif; ?>

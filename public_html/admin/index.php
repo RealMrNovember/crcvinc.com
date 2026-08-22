@@ -69,6 +69,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                         $site['home'] = sanitizeHome($_POST);
                         $site['safety'] = sanitizeSafety($_POST);
                         $site['contact'] = sanitizeContact($_POST);
+                        $site['founder'] = sanitizeFounder($_POST);
+                        $site['hours'] = sanitizeHours($_POST);
                         break;
                     case 'pages':
                         $site['pages'] = sanitizePages($_POST, $site['pages']);
@@ -247,6 +249,29 @@ function sanitizeContact(array $post): array
     $out = [];
     foreach ($keys as $key) {
         $out[$key] = trim((string) ($post['contact_' . $key] ?? ''));
+    }
+    return $out;
+}
+
+function sanitizeFounder(array $post): array
+{
+    return [
+        'name' => trim((string) ($post['founder_name'] ?? '')),
+        'title' => trim((string) ($post['founder_title'] ?? '')),
+    ];
+}
+
+function sanitizeHours(array $post): array
+{
+    $days = $post['hours_day'] ?? [];
+    $values = $post['hours_value'] ?? [];
+    $out = [];
+    foreach ($days as $i => $day) {
+        $day = trim((string) $day);
+        if ($day === '') {
+            continue;
+        }
+        $out[] = ['day' => $day, 'value' => trim((string) ($values[$i] ?? ''))];
     }
     return $out;
 }

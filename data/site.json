@@ -9,12 +9,12 @@
         "hero_subtitle": "Mobil vinç kiralama, proje taşımacılığı ve yedek parça tedarikinde 7/24 çözüm ortağınız.",
         "hero_cta_primary": "Hemen Teklif Al",
         "hero_cta_secondary": "Makine Parkımız",
-        "phone": "+905000000000",
-        "phone_display": "0500 000 00 00",
-        "whatsapp": "905000000000",
+        "phone": "+905413354044",
+        "phone_display": "0541 335 40 44",
+        "whatsapp": "905413354044",
         "email": "info@crcvinc.com",
-        "address": "İstanbul, Türkiye",
-        "footer_text": "CRC Vinç — İstanbul merkezli vinç kiralama ve yedek parça tedarik firması.",
+        "address": "Bulvar Anatolia, İvedikköy, Anadolu Blv, 06378 Yenimahalle/Ankara",
+        "footer_text": "CRC Vinç — Ankara merkezli vinç kiralama ve yedek parça tedarik firması.",
         "instagram": "",
         "linkedin": "",
         "map_embed": ""
@@ -151,22 +151,10 @@
         "cta_subtitle": "Tonaj ve saha bilginizi iletin, aynı gün dönüş yapalım."
     },
     "safety": [
-        {
-            "title": "Sigortalı Operasyon",
-            "desc": "Mali mesuliyet poliçeli işler"
-        },
-        {
-            "title": "Sertifikalı Operatör",
-            "desc": "Belgeli ve deneyimli ekip"
-        },
-        {
-            "title": "Günlük Bakım",
-            "desc": "Her araçta periyodik kontrol"
-        },
-        {
-            "title": "7/24 Ulaşım",
-            "desc": "Gece gündüz sahadayız"
-        }
+        { "title": "Sigortalı Operasyon", "desc": "Mali mesuliyet poliçeli işler" },
+        { "title": "Sertifikalı Operatör", "desc": "Belgeli ve deneyimli ekip" },
+        { "title": "Günlük Bakım", "desc": "Her araçta periyodik kontrol" },
+        { "title": "7/24 Ulaşım", "desc": "Gece gündüz sahadayız" }
     ],
     "contact": {
         "hero_title": "İletişim & Teklif",
@@ -174,10 +162,23 @@
         "info_title": "Bize Ulaşın",
         "form_title": "Teklif Formu"
     },
+    "hours": [
+        { "day": "Pazartesi", "value": "09:00–18:00" },
+        { "day": "Salı", "value": "09:00–18:00" },
+        { "day": "Çarşamba", "value": "09:00–18:00" },
+        { "day": "Perşembe", "value": "09:00–18:00" },
+        { "day": "Cuma", "value": "09:00–18:00" },
+        { "day": "Cumartesi", "value": "09:00–18:00" },
+        { "day": "Pazar", "value": "Kapalı" }
+    ],
+    "founder": {
+        "name": "Ahmet Çerçi",
+        "title": "Kurucu"
+    },
     "pages": {
         "kurumsal": {
             "title": "Kurumsal",
-            "body": "CRC Vinç, İstanbul merkezli vinç kiralama, yedek parça ve ithalat/ihracat firmasıdır.\n\nSertifikalı operatörlerimiz, sigortalı operasyonlarımız ve büyüyen makine parkımızla sanayi, inşaat ve enerji sektörlerine 7/24 hizmet veriyoruz.\n\nİş sağlığı ve güvenliği, her operasyonumuzun birinci önceliğidir."
+            "body": "CRC Vinç, Ankara merkezli vinç kiralama, yedek parça ve ithalat/ihracat firmasıdır.\n\nSertifikalı operatörlerimiz, sigortalı operasyonlarımız ve büyüyen makine parkımızla sanayi, inşaat ve enerji sektörlerine 7/24 hizmet veriyoruz.\n\nİş sağlığı ve güvenliği, her operasyonumuzun birinci önceliğidir."
         },
         "hizmetler": {
             "title": "Hizmetlerimiz",
