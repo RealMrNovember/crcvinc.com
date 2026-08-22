@@ -83,6 +83,9 @@ textarea { resize: vertical; }
 }
 .admin-save:hover { background: #c48400; }
 
+.admin-hint-inline { color: var(--a-muted); font-weight: 400; }
+.admin-account-form { max-width: 460px; }
+
 @media (max-width: 760px) {
   .admin-shell { flex-direction: column; }
   .admin-tabs { width: 100%; flex-direction: row; overflow-x: auto; }

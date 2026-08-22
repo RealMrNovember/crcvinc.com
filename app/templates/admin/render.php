@@ -14,7 +14,9 @@ function renderAdminPanel(array $site, bool $saved, ?string $error): void
         'fleet' => 'Makine Parkı',
         'projects' => 'Projeler',
         'clients' => 'Referanslar',
+        'texts' => 'Bölüm Başlıkları',
         'pages' => 'Sayfa Metinleri',
+        'account' => 'Hesap',
     ];
     if (!isset($tabs[$activeTab])) {
         $activeTab = 'settings';
@@ -60,8 +62,12 @@ function renderAdminPanel(array $site, bool $saved, ?string $error): void
       <?php renderProjectsTab($site['projects']); ?>
     <?php elseif ($activeTab === 'clients'): ?>
       <?php renderClientsTab($site['clients']); ?>
+    <?php elseif ($activeTab === 'texts'): ?>
+      <?php renderTextsTab($site); ?>
     <?php elseif ($activeTab === 'pages'): ?>
       <?php renderPagesTab($site['pages']); ?>
+    <?php elseif ($activeTab === 'account'): ?>
+      <?php renderAccountTab(); ?>
     <?php endif; ?>
   </main>
 </div>
@@ -241,6 +247,90 @@ function renderClientsTab(array $clients): void
       <?= csrfField() ?>
       <input type="hidden" name="tab" value="clients">
       <textarea name="clients_raw" rows="10" class="admin-textarea-wide"><?= e(implode("\n", $clients)) ?></textarea>
+      <button type="submit" class="admin-save">Kaydet</button>
+    </form>
+    <?php
+}
+
+function renderTextsTab(array $site): void
+{
+    $home = $site['home'];
+    $contact = $site['contact'];
+    $safety = repeatRows($site['safety'], 4);
+    ?>
+    <h2>Bölüm Başlıkları</h2>
+    <p class="admin-hint">Ana sayfadaki bölüm başlıkları, güvenlik şeridi ve iletişim sayfası metinlerini buradan değiştirebilirsiniz.</p>
+    <form method="post">
+      <?= csrfField() ?>
+      <input type="hidden" name="tab" value="texts">
+
+      <fieldset>
+        <legend>Hero Üst Etiketi</legend>
+        <label>Hero'da başlığın üstündeki küçük yazı<input type="text" name="hero_kicker" value="<?= e($site['settings']['hero_kicker'] ?? '') ?>"></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Ana Sayfa Bölüm Başlıkları</legend>
+        <div class="admin-row">
+          <label>Hizmetler — üst etiket<input type="text" name="home_services_kicker" value="<?= e($home['services_kicker']) ?>"></label>
+          <label>Hizmetler — başlık<input type="text" name="home_services_title" value="<?= e($home['services_title']) ?>"></label>
+        </div>
+        <div class="admin-row">
+          <label>Makine Parkı — üst etiket<input type="text" name="home_fleet_kicker" value="<?= e($home['fleet_kicker']) ?>"></label>
+          <label>Makine Parkı — başlık<input type="text" name="home_fleet_title" value="<?= e($home['fleet_title']) ?>"></label>
+        </div>
+        <div class="admin-row">
+          <label>Projeler — üst etiket<input type="text" name="home_projects_kicker" value="<?= e($home['projects_kicker']) ?>"></label>
+          <label>Projeler — başlık<input type="text" name="home_projects_title" value="<?= e($home['projects_title']) ?>"></label>
+        </div>
+        <div class="admin-row">
+          <label>Teklif çağrısı — başlık<input type="text" name="home_cta_title" value="<?= e($home['cta_title']) ?>"></label>
+          <label>Teklif çağrısı — alt yazı<input type="text" name="home_cta_subtitle" value="<?= e($home['cta_subtitle']) ?>"></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Güvenlik / İSG Şeridi</legend>
+        <p class="admin-hint">Boş bırakılan satırlar kaydedilirken silinir.</p>
+        <?php foreach ($safety as $item): ?>
+        <div class="admin-row">
+          <label>Başlık<input type="text" name="safety_title[]" value="<?= e($item['title'] ?? '') ?>"></label>
+          <label>Açıklama<input type="text" name="safety_desc[]" value="<?= e($item['desc'] ?? '') ?>"></label>
+        </div>
+        <?php endforeach; ?>
+      </fieldset>
+
+      <fieldset>
+        <legend>İletişim Sayfası Metinleri</legend>
+        <div class="admin-row">
+          <label>Başlık<input type="text" name="contact_hero_title" value="<?= e($contact['hero_title']) ?>"></label>
+          <label>Alt yazı<input type="text" name="contact_hero_subtitle" value="<?= e($contact['hero_subtitle']) ?>"></label>
+        </div>
+        <div class="admin-row">
+          <label>İletişim bilgisi kutusu başlığı<input type="text" name="contact_info_title" value="<?= e($contact['info_title']) ?>"></label>
+          <label>Form kutusu başlığı<input type="text" name="contact_form_title" value="<?= e($contact['form_title']) ?>"></label>
+        </div>
+      </fieldset>
+
+      <button type="submit" class="admin-save">Kaydet</button>
+    </form>
+    <?php
+}
+
+function renderAccountTab(): void
+{
+    ?>
+    <h2>Hesap Bilgileri</h2>
+    <p class="admin-hint">Panel kullanıcı adınızı ve şifrenizi buradan değiştirebilirsiniz. Şifreyi değiştirmek istemiyorsanız o alanları boş bırakın.</p>
+    <form method="post" class="admin-account-form">
+      <?= csrfField() ?>
+      <input type="hidden" name="tab" value="account">
+      <label>Mevcut şifre*<input type="password" name="current_password" required></label>
+      <label>Yeni kullanıcı adı<input type="text" name="new_username" value="<?= e(currentAdminUsername()) ?>" required></label>
+      <div class="admin-row">
+        <label>Yeni şifre <span class="admin-hint-inline">(değiştirmek istemiyorsanız boş bırakın)</span><input type="password" name="new_password" minlength="8"></label>
+        <label>Yeni şifre (tekrar)<input type="password" name="new_password_confirm" minlength="8"></label>
+      </div>
       <button type="submit" class="admin-save">Kaydet</button>
     </form>
     <?php

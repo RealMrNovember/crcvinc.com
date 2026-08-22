@@ -20,40 +20,68 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         $error = 'Oturum süresi doldu, lütfen formu tekrar gönderin.';
     } else {
         $tab = $_POST['tab'] ?? 'settings';
-        try {
-            switch ($tab) {
-                case 'settings':
-                    $site['settings'] = array_merge($site['settings'], sanitizeSettings($_POST));
-                    break;
-                case 'menu':
-                    $site['menu'] = sanitizeMenu($_POST);
-                    break;
-                case 'counters':
-                    $site['counters'] = sanitizeCounters($_POST);
-                    break;
-                case 'services':
-                    $site['services'] = sanitizeServices($_POST);
-                    break;
-                case 'fleet':
-                    $site['fleet'] = sanitizeFleet($_POST);
-                    break;
-                case 'projects':
-                    $site['projects'] = sanitizeProjects($_POST);
-                    break;
-                case 'clients':
-                    $site['clients'] = sanitizeClients($_POST);
-                    break;
-                case 'pages':
-                    $site['pages'] = sanitizePages($_POST, $site['pages']);
-                    break;
-            }
-            if (!saveSiteContent($site)) {
-                $error = 'Kaydedilemedi. Sunucuda data/site.json dosyasına yazma izni olduğundan emin olun.';
+
+        // Hesap sekmesi site.json'u değil admin.json'u değiştirir, ayrı akış.
+        if ($tab === 'account') {
+            $newPassword = (string) ($_POST['new_password'] ?? '');
+            $newPasswordConfirm = (string) ($_POST['new_password_confirm'] ?? '');
+            if ($newPassword !== '' && $newPassword !== $newPasswordConfirm) {
+                $error = 'Yeni şifreler eşleşmiyor.';
             } else {
-                $saved = true;
+                [$ok, $message] = changeAdminCredentials(
+                    (string) ($_POST['current_password'] ?? ''),
+                    (string) ($_POST['new_username'] ?? ''),
+                    $newPassword !== '' ? $newPassword : null
+                );
+                if ($ok) {
+                    $_SESSION['admin_user'] = (string) ($_POST['new_username'] ?? '');
+                    $saved = true;
+                } else {
+                    $error = $message;
+                }
             }
-        } catch (Throwable $e) {
-            $error = 'Beklenmeyen bir hata oluştu: ' . $e->getMessage();
+        } else {
+            try {
+                switch ($tab) {
+                    case 'settings':
+                        $site['settings'] = array_merge($site['settings'], sanitizeSettings($_POST));
+                        break;
+                    case 'menu':
+                        $site['menu'] = sanitizeMenu($_POST);
+                        break;
+                    case 'counters':
+                        $site['counters'] = sanitizeCounters($_POST);
+                        break;
+                    case 'services':
+                        $site['services'] = sanitizeServices($_POST);
+                        break;
+                    case 'fleet':
+                        $site['fleet'] = sanitizeFleet($_POST);
+                        break;
+                    case 'projects':
+                        $site['projects'] = sanitizeProjects($_POST);
+                        break;
+                    case 'clients':
+                        $site['clients'] = sanitizeClients($_POST);
+                        break;
+                    case 'texts':
+                        $site['settings']['hero_kicker'] = trim((string) ($_POST['hero_kicker'] ?? ''));
+                        $site['home'] = sanitizeHome($_POST);
+                        $site['safety'] = sanitizeSafety($_POST);
+                        $site['contact'] = sanitizeContact($_POST);
+                        break;
+                    case 'pages':
+                        $site['pages'] = sanitizePages($_POST, $site['pages']);
+                        break;
+                }
+                if (!saveSiteContent($site)) {
+                    $error = 'Kaydedilemedi. Sunucuda data/site.json dosyasına yazma izni olduğundan emin olun.';
+                } else {
+                    $saved = true;
+                }
+            } catch (Throwable $e) {
+                $error = 'Beklenmeyen bir hata oluştu: ' . $e->getMessage();
+            }
         }
     }
 }
@@ -183,6 +211,42 @@ function sanitizeClients(array $post): array
         if ($line !== '') {
             $out[] = $line;
         }
+    }
+    return $out;
+}
+
+function sanitizeHome(array $post): array
+{
+    $keys = ['services_kicker', 'services_title', 'fleet_kicker', 'fleet_title',
+        'projects_kicker', 'projects_title', 'cta_title', 'cta_subtitle'];
+    $out = [];
+    foreach ($keys as $key) {
+        $out[$key] = trim((string) ($post['home_' . $key] ?? ''));
+    }
+    return $out;
+}
+
+function sanitizeSafety(array $post): array
+{
+    $titles = $post['safety_title'] ?? [];
+    $descs = $post['safety_desc'] ?? [];
+    $out = [];
+    foreach ($titles as $i => $title) {
+        $title = trim((string) $title);
+        if ($title === '') {
+            continue;
+        }
+        $out[] = ['title' => $title, 'desc' => trim((string) ($descs[$i] ?? ''))];
+    }
+    return $out;
+}
+
+function sanitizeContact(array $post): array
+{
+    $keys = ['hero_title', 'hero_subtitle', 'info_title', 'form_title'];
+    $out = [];
+    foreach ($keys as $key) {
+        $out[$key] = trim((string) ($post['contact_' . $key] ?? ''));
     }
     return $out;
 }

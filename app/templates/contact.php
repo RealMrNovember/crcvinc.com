@@ -1,14 +1,14 @@
-<?php /** @var array $settings @var array $errors @var bool $sent @var array $old */ ?>
+<?php /** @var array $settings @var array $site @var array $errors @var bool $sent @var array $old */ ?>
 <section class="page-hero">
   <div class="container">
-    <h1 class="reveal" data-reveal>İletişim &amp; Teklif</h1>
-    <p class="reveal" data-reveal data-reveal-delay="1">Tonaj ve saha bilginizi iletin, aynı gün dönüş yapalım.</p>
+    <h1 class="reveal" data-reveal><?= e($site['contact']['hero_title']) ?></h1>
+    <p class="reveal" data-reveal data-reveal-delay="1"><?= e($site['contact']['hero_subtitle']) ?></p>
   </div>
 </section>
 <section class="section">
   <div class="container contact-grid">
     <div class="contact-info reveal" data-reveal>
-      <h2>Bize Ulaşın</h2>
+      <h2><?= e($site['contact']['info_title']) ?></h2>
       <ul class="contact-list">
         <li><strong>Telefon</strong><a href="tel:<?= e($settings['phone']) ?>"><?= e($settings['phone_display']) ?></a></li>
         <li><strong>WhatsApp</strong><a href="https://wa.me/<?= e($settings['whatsapp']) ?>" target="_blank" rel="noopener">Mesaj gönderin</a></li>
@@ -20,7 +20,7 @@
       <?php endif; ?>
     </div>
     <div class="contact-form-wrap reveal" data-reveal data-reveal-delay="1">
-      <h2>Teklif Formu</h2>
+      <h2><?= e($site['contact']['form_title']) ?></h2>
       <?php if ($sent): ?>
       <div class="form-success">Mesajınız alındı. En kısa sürede size döneceğiz.</div>
       <?php endif; ?>

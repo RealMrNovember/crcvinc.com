@@ -4,6 +4,7 @@
         "legal_name": "CRC Vinç Kiralama Yedek Parça İthalat İhracat San. Tic. Ltd. Şti.",
         "tagline": "Ağır Kaldırmanın Güvenilir Gücü",
         "hero_video_id": "",
+        "hero_kicker": "7/24 Vinç Kiralama & Ağır Kaldırma",
         "hero_title": "Her Yükün Altından Kalkarız",
         "hero_subtitle": "Mobil vinç kiralama, proje taşımacılığı ve yedek parça tedarikinde 7/24 çözüm ortağınız.",
         "hero_cta_primary": "Hemen Teklif Al",
@@ -139,6 +140,40 @@
         "Referans E",
         "Referans F"
     ],
+    "home": {
+        "services_kicker": "Hizmetlerimiz",
+        "services_title": "Kaldırma ve Taşımada Uçtan Uca Çözüm",
+        "fleet_kicker": "Makine Parkı",
+        "fleet_title": "Her Tonaja Uygun Güçlü Filo",
+        "projects_kicker": "Projelerimiz",
+        "projects_title": "Sahada Kanıtlanmış İşler",
+        "cta_title": "Projeniz için hemen teklif alın",
+        "cta_subtitle": "Tonaj ve saha bilginizi iletin, aynı gün dönüş yapalım."
+    },
+    "safety": [
+        {
+            "title": "Sigortalı Operasyon",
+            "desc": "Mali mesuliyet poliçeli işler"
+        },
+        {
+            "title": "Sertifikalı Operatör",
+            "desc": "Belgeli ve deneyimli ekip"
+        },
+        {
+            "title": "Günlük Bakım",
+            "desc": "Her araçta periyodik kontrol"
+        },
+        {
+            "title": "7/24 Ulaşım",
+            "desc": "Gece gündüz sahadayız"
+        }
+    ],
+    "contact": {
+        "hero_title": "İletişim & Teklif",
+        "hero_subtitle": "Tonaj ve saha bilginizi iletin, aynı gün dönüş yapalım.",
+        "info_title": "Bize Ulaşın",
+        "form_title": "Teklif Formu"
+    },
     "pages": {
         "kurumsal": {
             "title": "Kurumsal",

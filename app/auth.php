@@ -15,12 +15,53 @@ function adminCredentialsExist(): bool
 
 function saveAdminCredentials(string $username, string $password): bool
 {
-    $payload = [
-        'username' => $username,
-        'password_hash' => password_hash($password, PASSWORD_DEFAULT),
-    ];
+    return saveAdminCredentialsRaw($username, password_hash($password, PASSWORD_DEFAULT));
+}
+
+function saveAdminCredentialsRaw(string $username, string $passwordHash): bool
+{
+    $payload = ['username' => $username, 'password_hash' => $passwordHash];
     $json = json_encode($payload, JSON_PRETTY_PRINT);
     return $json !== false && file_put_contents(adminCredentialsFile(), $json, LOCK_EX) !== false;
+}
+
+function currentAdminUsername(): string
+{
+    $data = json_decode((string) @file_get_contents(adminCredentialsFile()), true);
+    return is_array($data) ? (string) ($data['username'] ?? '') : '';
+}
+
+/**
+ * Kullanıcı adını ve (isteğe bağlı) şifreyi değiştirir. Her zaman mevcut şifreyi doğrular.
+ * @return array{0: bool, 1: string} [başarılı mı, hata mesajı]
+ */
+function changeAdminCredentials(string $currentPassword, string $newUsername, ?string $newPassword): array
+{
+    $data = json_decode((string) @file_get_contents(adminCredentialsFile()), true);
+    if (!is_array($data)) {
+        return [false, 'Mevcut hesap bilgileri okunamadı.'];
+    }
+    if (!password_verify($currentPassword, (string) ($data['password_hash'] ?? ''))) {
+        return [false, 'Mevcut şifre yanlış.'];
+    }
+
+    $newUsername = trim($newUsername);
+    if ($newUsername === '') {
+        return [false, 'Kullanıcı adı boş olamaz.'];
+    }
+
+    $passwordHash = (string) $data['password_hash'];
+    if ($newPassword !== null && $newPassword !== '') {
+        if (strlen($newPassword) < 8) {
+            return [false, 'Yeni şifre en az 8 karakter olmalı.'];
+        }
+        $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+    }
+
+    if (!saveAdminCredentialsRaw($newUsername, $passwordHash)) {
+        return [false, 'Kaydedilemedi. data/ klasörüne yazma izni olduğundan emin olun.'];
+    }
+    return [true, ''];
 }
 
 function verifyAdminCredentials(string $username, string $password): bool

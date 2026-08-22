@@ -16,7 +16,7 @@ $videoId = youtubeId($settings['hero_video_id'] ?? '');
   <?php endif; ?>
   <div class="hero-overlay" aria-hidden="true"></div>
   <div class="container hero-content">
-    <p class="hero-kicker reveal" data-reveal>7/24 Vinç Kiralama &amp; Ağır Kaldırma</p>
+    <p class="hero-kicker reveal" data-reveal><?= e($settings['hero_kicker']) ?></p>
     <h1 class="hero-title reveal" data-reveal data-reveal-delay="1"><?= e($settings['hero_title']) ?></h1>
     <p class="hero-subtitle reveal" data-reveal data-reveal-delay="2"><?= e($settings['hero_subtitle']) ?></p>
     <div class="hero-actions reveal" data-reveal data-reveal-delay="3">
@@ -43,8 +43,8 @@ $videoId = youtubeId($settings['hero_video_id'] ?? '');
 <section class="section">
   <div class="container">
     <div class="section-head reveal" data-reveal>
-      <p class="section-kicker">Hizmetlerimiz</p>
-      <h2>Kaldırma ve Taşımada Uçtan Uca Çözüm</h2>
+      <p class="section-kicker"><?= e($site['home']['services_kicker']) ?></p>
+      <h2><?= e($site['home']['services_title']) ?></h2>
     </div>
     <?= render('partials/services-grid', ['services' => $site['services']]) ?>
   </div>
@@ -54,8 +54,8 @@ $videoId = youtubeId($settings['hero_video_id'] ?? '');
 <section class="section section-dark">
   <div class="container">
     <div class="section-head reveal" data-reveal>
-      <p class="section-kicker">Makine Parkı</p>
-      <h2>Her Tonaja Uygun Güçlü Filo</h2>
+      <p class="section-kicker"><?= e($site['home']['fleet_kicker']) ?></p>
+      <h2><?= e($site['home']['fleet_title']) ?></h2>
     </div>
     <?= render('partials/fleet-grid', ['fleet' => $site['fleet']]) ?>
     <div class="section-cta reveal" data-reveal>
@@ -68,8 +68,8 @@ $videoId = youtubeId($settings['hero_video_id'] ?? '');
 <section class="section">
   <div class="container">
     <div class="section-head reveal" data-reveal>
-      <p class="section-kicker">Projelerimiz</p>
-      <h2>Sahada Kanıtlanmış İşler</h2>
+      <p class="section-kicker"><?= e($site['home']['projects_kicker']) ?></p>
+      <h2><?= e($site['home']['projects_title']) ?></h2>
     </div>
   </div>
   <?= render('partials/projects-slider', ['projects' => $site['projects']]) ?>
@@ -89,20 +89,21 @@ $videoId = youtubeId($settings['hero_video_id'] ?? '');
 <?php endif; ?>
 
 <!-- İSG ŞERİDİ -->
+<?php if (!empty($site['safety'])): ?>
 <section class="safety">
   <div class="container safety-grid">
-    <div class="safety-item reveal" data-reveal><strong>Sigortalı Operasyon</strong><span>Mali mesuliyet poliçeli işler</span></div>
-    <div class="safety-item reveal" data-reveal data-reveal-delay="1"><strong>Sertifikalı Operatör</strong><span>Belgeli ve deneyimli ekip</span></div>
-    <div class="safety-item reveal" data-reveal data-reveal-delay="2"><strong>Günlük Bakım</strong><span>Her araçta periyodik kontrol</span></div>
-    <div class="safety-item reveal" data-reveal data-reveal-delay="3"><strong>7/24 Ulaşım</strong><span>Gece gündüz sahadayız</span></div>
+    <?php foreach ($site['safety'] as $i => $item): ?>
+    <div class="safety-item reveal" data-reveal data-reveal-delay="<?= $i % 4 ?>"><strong><?= e($item['title']) ?></strong><span><?= e($item['desc']) ?></span></div>
+    <?php endforeach; ?>
   </div>
 </section>
+<?php endif; ?>
 
 <!-- CTA -->
 <section class="cta-band">
   <div class="container cta-inner reveal" data-reveal>
-    <h2>Projeniz için hemen teklif alın</h2>
-    <p>Tonaj ve saha bilginizi iletin, aynı gün dönüş yapalım.</p>
+    <h2><?= e($site['home']['cta_title']) ?></h2>
+    <p><?= e($site['home']['cta_subtitle']) ?></p>
     <div class="hero-actions">
       <a class="btn btn-primary" href="/iletisim">Teklif Al</a>
       <a class="btn btn-ghost" href="tel:<?= e($settings['phone']) ?>">Hemen Ara: <?= e($settings['phone_display']) ?></a>
