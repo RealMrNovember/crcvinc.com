@@ -4,8 +4,17 @@ declare(strict_types=1);
 define('APP_DIR', __DIR__);
 define('DATA_DIR', dirname(__DIR__) . '/data');
 define('TEMPLATE_DIR', APP_DIR . '/templates');
+define('PUBLIC_DIR', dirname(__DIR__) . '/public_html');
 
 require APP_DIR . '/content.php';
+
+/** CSS/JS linklerine dosyanın son değişim zamanını ?v= olarak ekler — Cloudflare/tarayıcı önbelleği her deploy'da otomatik kırılır. */
+function assetUrl(string $path): string
+{
+    $file = PUBLIC_DIR . '/' . ltrim($path, '/');
+    $mtime = @filemtime($file);
+    return $path . ($mtime !== false ? '?v=' . $mtime : '');
+}
 
 /** HTML çıktısı için güvenli kaçış. */
 function e(?string $value): string

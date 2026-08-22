@@ -28,7 +28,7 @@ function renderAdminPanel(array $site, bool $saved, ?string $error): void
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Yönetim Paneli — CRC Vinç</title>
-<link rel="stylesheet" href="/assets/css/admin.css">
+<link rel="stylesheet" href="<?= e(assetUrl('/assets/css/admin.css')) ?>">
 </head>
 <body class="admin-body">
 <header class="admin-topbar">

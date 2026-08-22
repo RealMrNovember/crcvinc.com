@@ -30,5 +30,6 @@
   </div>
   <div class="container footer-bottom">
     <span>© <?= date('Y') ?> <?= e($settings['legal_name'] ?? $settings['site_name']) ?></span>
+    <a class="footer-credit" href="https://cicibyte.com" target="_blank" rel="noopener">Tasarım &amp; Geliştirme: CiciByte Teknoloji</a>
   </div>
 </footer>

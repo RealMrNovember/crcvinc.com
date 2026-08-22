@@ -317,7 +317,13 @@ a { color: var(--accent); text-decoration: none; }
 .footer-bottom {
   border-top: 1px solid var(--line); padding-block: 18px;
   color: var(--text-muted); font-size: 0.82rem;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
 }
+.footer-credit {
+  color: var(--text-muted); font-size: 0.82rem; font-weight: 600;
+  transition: color var(--transition);
+}
+.footer-credit:hover { color: var(--accent); }
 
 /* ---------- WhatsApp FAB ---------- */
 .whatsapp-fab {
