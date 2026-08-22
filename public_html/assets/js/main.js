@@ -36,9 +36,9 @@
     onScroll();
   }
 
-  /* Mobil menü */
+  /* Mobil menü — bağımsız bir eleman (header'ın flex bağlamının dışında, bkz. main.css notu) */
   var navToggle = document.querySelector('[data-nav-toggle]');
-  var nav = document.querySelector('[data-nav]');
+  var nav = document.querySelector('[data-mobile-menu]');
   if (navToggle && nav) {
     navToggle.addEventListener('click', function () {
       var open = nav.classList.toggle('is-open');

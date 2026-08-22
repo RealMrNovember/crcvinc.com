@@ -92,8 +92,8 @@ a { color: var(--accent); text-decoration: none; }
 }
 .nav-cta:hover { background: var(--accent-strong); transform: translateY(-1px); }
 
-.nav-toggle { display: none; background: none; border: 0; cursor: pointer; padding: 8px; }
-.nav-toggle span { display: block; width: 24px; height: 2px; background: var(--text); margin: 5px 0; transition: var(--transition); }
+/* Mobil tam ekran menü — bkz. responsive bölümündeki not. Masaüstünde asla görünmez. */
+.mobile-menu { display: none; }
 
 /* ---------- Hero ---------- */
 .hero {
@@ -250,10 +250,16 @@ a { color: var(--accent); text-decoration: none; }
 .clients-track { display: flex; gap: 70px; width: max-content; animation: marquee 28s linear infinite; }
 .clients:hover .clients-track { animation-play-state: paused; }
 .client-logo {
+  display: flex; align-items: center; height: 44px;
   font-family: var(--heading); font-weight: 700; font-size: 1.35rem; text-transform: uppercase;
   color: var(--text-muted); opacity: 0.7; white-space: nowrap; transition: var(--transition);
 }
 .client-logo:hover { color: var(--accent); opacity: 1; }
+.client-logo img {
+  height: 100%; width: auto; max-width: 160px; object-fit: contain;
+  filter: grayscale(1) brightness(1.6); opacity: 0.75; transition: filter var(--transition), opacity var(--transition);
+}
+.client-logo:hover img { filter: grayscale(0) brightness(1); opacity: 1; }
 @keyframes marquee { to { transform: translateX(-50%); } }
 
 /* ---------- İSG şeridi ---------- */
@@ -390,7 +396,7 @@ a { color: var(--accent); text-decoration: none; }
 }
 .footer-credit:hover { color: var(--accent); }
 
-/* ---------- WhatsApp FAB ---------- */
+/* ---------- WhatsApp FAB (yalnızca masaüstü — mobilde alt menüde) ---------- */
 .whatsapp-fab {
   position: fixed; right: 22px; bottom: 22px; z-index: 60;
   width: 56px; height: 56px; border-radius: 50%;
@@ -400,6 +406,33 @@ a { color: var(--accent); text-decoration: none; }
   transition: transform var(--transition);
 }
 .whatsapp-fab:hover { transform: scale(1.08); }
+
+/* ---------- Mobil alt menü (bottom nav) ---------- */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 110;
+  background: var(--bg-alt); border-top: 1px solid var(--line);
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.35);
+  padding: 8px 6px calc(8px + env(safe-area-inset-bottom, 0px));
+  align-items: flex-end; justify-content: space-around;
+}
+.mobile-bottom-nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  flex: 1; min-width: 0; padding: 6px 2px; border: 0; background: none; cursor: pointer;
+  color: var(--text-muted); font-size: 0.66rem; font-weight: 600;
+  transition: color var(--transition);
+}
+.mobile-bottom-nav-item span { white-space: nowrap; }
+.mobile-bottom-nav-item:hover, .mobile-bottom-nav-item:active { color: var(--accent); }
+.mobile-bottom-nav-menu[aria-expanded="true"] { color: var(--accent); }
+.mobile-bottom-nav-whatsapp {
+  display: flex; align-items: center; justify-content: center;
+  width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0;
+  background: #25d366; color: #fff; margin-top: -26px;
+  box-shadow: 0 8px 20px rgba(37, 211, 102, 0.45); border: 4px solid var(--bg-alt);
+  transition: transform var(--transition);
+}
+.mobile-bottom-nav-whatsapp:active { transform: scale(0.94); }
 
 /* ---------- Preloader (vinç animasyonu) ---------- */
 .preloader {
@@ -456,24 +489,35 @@ a { color: var(--accent); text-decoration: none; }
   .founder-card { align-self: start; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
 
-  .nav-toggle { display: block; }
-  .site-nav {
-    position: fixed; inset: 0; top: 0; z-index: 100;
-    isolation: isolate; transform: translateZ(0);
-    flex-direction: column; justify-content: center; gap: 30px;
+  /* Masaüstü yatay menü mobilde tamamen gizlenir — mobil menü, header'ın flex
+     bağlamının DIŞINDA bağımsız bir eleman olarak render edilir (.mobile-menu).
+     Neden: position:fixed bir öğe, position:sticky/flex atalarının içinde bazı
+     mobil tarayıcı motorlarında düzgün "kaçamıyor" ve o atanın kutusuna hapsoluyor
+     — menünün ekran dışında/küçük bir kutuda sıkışması bu yüzdendi. */
+  .site-nav { display: none; }
+
+  .mobile-menu {
+    position: fixed; inset: 0; z-index: 100;
+    display: flex; flex-direction: column; justify-content: flex-start; gap: 4px;
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 96px 24px calc(96px + env(safe-area-inset-bottom, 0px));
     background: var(--bg);
     backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
     opacity: 0; visibility: hidden; pointer-events: none;
     transition: opacity var(--transition), visibility var(--transition);
   }
-  .site-nav.is-open { opacity: 1; visibility: visible; pointer-events: auto; }
-  .site-nav a { font-size: 1.3rem; }
+  .mobile-menu.is-open { opacity: 1; visibility: visible; pointer-events: auto; }
+  .mobile-menu a {
+    color: var(--text); font-weight: 500; font-size: 1.25rem;
+    padding-block: 14px; border-bottom: 1px solid var(--line);
+  }
+  .mobile-menu .nav-cta { border-bottom: 0; margin-top: 16px; text-align: center; color: #12161d; }
+
   body.nav-locked { overflow: hidden; }
-  .nav-toggle { position: relative; z-index: 45; }
-  .nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-  .nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
-  .nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  .whatsapp-fab { display: none; }
+  .mobile-bottom-nav { display: flex; }
+  body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
 }
 
 @media (max-width: 560px) {

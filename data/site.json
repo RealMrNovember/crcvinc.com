@@ -147,11 +147,11 @@
         }
     ],
     "clients": [
-        "Referans B",
-        "Referans C",
-        "Referans D",
-        "Referans E",
-        "Referans F"
+        { "name": "Referans B", "logo": "" },
+        { "name": "Referans C", "logo": "" },
+        { "name": "Referans D", "logo": "" },
+        { "name": "Referans E", "logo": "" },
+        { "name": "Referans F", "logo": "" }
     ],
     "home": {
         "services_kicker": "Hizmetlerimiz",

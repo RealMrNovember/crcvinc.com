@@ -87,7 +87,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                         $site['projects'] = sanitizeProjects($_POST, $_FILES);
                         break;
                     case 'clients':
-                        $site['clients'] = sanitizeClients($_POST);
+                        $site['clients'] = sanitizeClients($_POST, $_FILES);
                         break;
                     case 'blog':
                         $site['blog']['page_title'] = trim((string) ($_POST['blog_page_title'] ?? 'Blog'));
@@ -484,18 +484,57 @@ function sanitizeBlog(array $post, array $files): array
     return $out;
 }
 
-function sanitizeClients(array $post): array
+/** Referans galerisi: satır bazlı düzenleme + tekli görsel değişimi + toplu çoklu yükleme + sürükleyerek sıralama (DOM sırası = gönderim sırası). */
+function sanitizeClients(array $post, array $files): array
 {
-    $raw = (string) ($post['clients_raw'] ?? '');
-    $lines = preg_split('/\R/', $raw) ?: [];
+    $names = $post['client_name'] ?? [];
     $out = [];
-    foreach ($lines as $line) {
-        $line = trim($line);
-        if ($line !== '') {
-            $out[] = $line;
+    foreach ($names as $i => $name) {
+        $name = trim((string) $name);
+        $logo = resolveRowImage($post, $files, 'client_logo', 'client_logo_file', (int) $i);
+        if ($name === '' && $logo === '') {
+            continue;
         }
+        $out[] = ['name' => $name, 'logo' => $logo];
     }
+
+    // Toplu yükleme: tek seferde seçilen tüm dosyalar, listenin sonuna yeni referans olarak eklenir.
+    $bulkNames = $files['client_bulk_file']['name'] ?? [];
+    foreach ($bulkNames as $i => $originalName) {
+        if (($originalName ?? '') === '') {
+            continue;
+        }
+        $file = extractFileAt($files, 'client_bulk_file', (int) $i);
+        if ($file === null) {
+            continue;
+        }
+        $uploaded = handleImageUpload($file);
+        if ($uploaded === null) {
+            continue;
+        }
+        $out[] = ['name' => filenameToLabel((string) $originalName), 'logo' => $uploaded];
+    }
+
     return $out;
+}
+
+/** "acme-corp-logo.png" gibi bir dosya adını "Acme Corp Logo" gibi okunabilir bir isme çevirir (mbstring eklentisine bağımlı değildir). */
+function filenameToLabel(string $filename): string
+{
+    $name = (string) pathinfo($filename, PATHINFO_FILENAME);
+    $name = str_replace(['-', '_'], ' ', $name);
+    $name = trim(preg_replace('/\s+/', ' ', $name) ?? '');
+    if ($name === '') {
+        return 'Referans';
+    }
+    $words = array_map(static function (string $word): string {
+        if ($word === '') {
+            return $word;
+        }
+        $first = firstChar($word);
+        return strtoupper($first) . substr($word, strlen($first));
+    }, explode(' ', $name));
+    return implode(' ', $words);
 }
 
 function sanitizeHome(array $post): array

@@ -322,15 +322,88 @@ function renderImagePicker(string $currentImage, string $fieldName): void
 
 function renderClientsTab(array $clients): void
 {
+    $clients = repeatRows($clients, 8);
     ?>
-    <h2>Referans Logoları / İsimleri</h2>
-    <p class="admin-hint">Her satıra bir referans adı yazın.</p>
-    <form method="post">
+    <h2>Referans Galerisi</h2>
+    <p class="admin-hint">Birden fazla logo dosyasını aynı anda seçip toplu yükleyebilirsiniz; her biri otomatik olarak listeye eklenir. Kartları sürükleyerek veya ok tuşlarıyla sıralayabilir, isim/logoyu tek tek düzenleyebilir, "Kaldır"ı işaretleyip kaydederek silebilirsiniz.</p>
+    <form method="post" enctype="multipart/form-data">
       <?= csrfField() ?>
       <input type="hidden" name="tab" value="clients">
-      <textarea name="clients_raw" rows="10" class="admin-textarea-wide"><?= e(implode("\n", $clients)) ?></textarea>
+
+      <fieldset>
+        <legend>Toplu Logo Yükleme</legend>
+        <label>Birden fazla dosya seçin<input type="file" name="client_bulk_file[]" accept=".svg,.png,.jpg,.jpeg,.webp" multiple></label>
+      </fieldset>
+
+      <div class="admin-gallery" data-sortable>
+        <?php foreach ($clients as $i => $client): ?>
+        <div class="admin-gallery-card" draggable="true">
+          <button type="button" class="admin-drag-handle" aria-label="Sürükleyerek sırala" title="Sürükleyerek sırala">⠿⠿</button>
+          <div class="admin-image-picker admin-image-picker-compact">
+            <?php if (!empty($client['logo'])): ?>
+            <img src="<?= e(assetUrl($client['logo'])) ?>" alt="" class="admin-image-preview">
+            <?php else: ?>
+            <div class="admin-image-preview admin-image-preview-empty">Logo yok</div>
+            <?php endif; ?>
+            <label class="admin-image-picker-label">Değiştir
+              <input type="hidden" name="client_logo[]" value="<?= e($client['logo'] ?? '') ?>">
+              <input type="file" name="client_logo_file[]" accept=".svg,.png,.jpg,.jpeg,.webp">
+            </label>
+          </div>
+          <label>Ad<input type="text" name="client_name[]" value="<?= e($client['name'] ?? '') ?>" placeholder="Referans adı"></label>
+          <div class="admin-move-buttons">
+            <button type="button" class="admin-move-up" aria-label="Yukarı taşı">↑</button>
+            <button type="button" class="admin-move-down" aria-label="Aşağı taşı">↓</button>
+            <button type="button" class="admin-remove-card" aria-label="Bu kartı kaldır">🗑 Kaldır</button>
+          </div>
+        </div>
+        <?php endforeach; ?>
+      </div>
+
       <button type="submit" class="admin-save">Kaydet</button>
     </form>
+    <script>
+    (function () {
+      var gallery = document.querySelector('[data-sortable]');
+      if (!gallery) return;
+      var dragEl = null;
+
+      gallery.addEventListener('dragstart', function (e) {
+        var card = e.target.closest('.admin-gallery-card');
+        if (!card) return;
+        dragEl = card;
+        card.classList.add('is-dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      gallery.addEventListener('dragend', function (e) {
+        var card = e.target.closest('.admin-gallery-card');
+        if (card) card.classList.remove('is-dragging');
+        dragEl = null;
+      });
+      gallery.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        var card = e.target.closest('.admin-gallery-card');
+        if (!card || card === dragEl || !dragEl) return;
+        var rect = card.getBoundingClientRect();
+        var before = (e.clientY - rect.top) < rect.height / 2;
+        gallery.insertBefore(dragEl, before ? card : card.nextSibling);
+      });
+
+      gallery.addEventListener('click', function (e) {
+        var card = e.target.closest('.admin-gallery-card');
+        if (!card) return;
+        if (e.target.classList.contains('admin-move-up')) {
+          var prev = card.previousElementSibling;
+          if (prev) gallery.insertBefore(card, prev);
+        } else if (e.target.classList.contains('admin-move-down')) {
+          var next = card.nextElementSibling;
+          if (next) gallery.insertBefore(next, card);
+        } else if (e.target.classList.contains('admin-remove-card')) {
+          card.remove();
+        }
+      });
+    })();
+    </script>
     <?php
 }
 

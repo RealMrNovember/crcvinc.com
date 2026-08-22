@@ -20,8 +20,5 @@
       <?php endforeach; ?>
       <a class="nav-cta" href="/iletisim">Teklif Al</a>
     </nav>
-    <button class="nav-toggle" data-nav-toggle aria-label="Menüyü aç/kapat" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
   </div>
 </header>

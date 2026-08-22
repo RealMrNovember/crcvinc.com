@@ -83,7 +83,13 @@ $videoId = youtubeId($settings['hero_video_id'] ?? '');
   <div class="clients-track" data-marquee>
     <?php for ($pass = 0; $pass < 2; $pass++): ?>
       <?php foreach ($site['clients'] as $client): ?>
-      <span class="client-logo"<?= $pass === 1 ? ' aria-hidden="true"' : '' ?>><?= e($client) ?></span>
+      <span class="client-logo"<?= $pass === 1 ? ' aria-hidden="true"' : '' ?>>
+        <?php if (!empty($client['logo'])): ?>
+        <img src="<?= e(assetUrl($client['logo'])) ?>" alt="<?= e($client['name'] ?? '') ?>" loading="lazy">
+        <?php else: ?>
+        <?= e($client['name'] ?? '') ?>
+        <?php endif; ?>
+      </span>
       <?php endforeach; ?>
     <?php endfor; ?>
   </div>
