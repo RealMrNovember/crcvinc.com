@@ -6,6 +6,27 @@ define('DATA_DIR', dirname(__DIR__) . '/data');
 define('TEMPLATE_DIR', APP_DIR . '/templates');
 define('PUBLIC_DIR', dirname(__DIR__) . '/public_html');
 
+// Sunucudaki PHP sürümü 8.0'dan eski olabilir (tespit edildi) — bu üç fonksiyon PHP 8.0
+// ile geldi, projede birden çok yerde kullanılıyor. Yoklarsa burada tanımlanır.
+if (!function_exists('str_starts_with')) {
+    function str_starts_with(string $haystack, string $needle): bool
+    {
+        return $needle === '' || strncmp($haystack, $needle, strlen($needle)) === 0;
+    }
+}
+if (!function_exists('str_ends_with')) {
+    function str_ends_with(string $haystack, string $needle): bool
+    {
+        return $needle === '' || substr($haystack, -strlen($needle)) === $needle;
+    }
+}
+if (!function_exists('str_contains')) {
+    function str_contains(string $haystack, string $needle): bool
+    {
+        return $needle === '' || strpos($haystack, $needle) !== false;
+    }
+}
+
 require APP_DIR . '/content.php';
 
 /** CSS/JS linklerine dosyanın son değişim zamanını ?v= olarak ekler — Cloudflare/tarayıcı önbelleği her deploy'da otomatik kırılır. */
@@ -45,6 +66,65 @@ function formatTurkishDate(string $date): string
         return $date;
     }
     return ((int) $d) . ' ' . $months[$monthIndex] . ' ' . $y;
+}
+
+/** Ana sayfa ve tüm sayfalarda kullanılan LocalBusiness/HomeAndConstructionBusiness yapılandırılmış verisini üretir. */
+function buildLocalBusinessSchema(array $settings, array $site, string $origin): array
+{
+    $dayMap = [
+        'Pazartesi' => 'Monday', 'Salı' => 'Tuesday', 'Çarşamba' => 'Wednesday',
+        'Perşembe' => 'Thursday', 'Cuma' => 'Friday', 'Cumartesi' => 'Saturday', 'Pazar' => 'Sunday',
+    ];
+    $hoursSpec = [];
+    foreach ($site['hours'] ?? [] as $item) {
+        $day = $dayMap[$item['day'] ?? ''] ?? null;
+        $value = trim((string) ($item['value'] ?? ''));
+        if ($day === null || $value === '' || stripos($value, 'kapalı') !== false) {
+            continue;
+        }
+        $parts = preg_split('/\s*[–-]\s*/u', $value);
+        if (count($parts) !== 2) {
+            continue;
+        }
+        $hoursSpec[] = [
+            '@type' => 'OpeningHoursSpecification',
+            'dayOfWeek' => 'https://schema.org/' . $day,
+            'opens' => trim($parts[0]),
+            'closes' => trim($parts[1]),
+        ];
+    }
+
+    $sameAs = array_values(array_filter([$settings['instagram'] ?? '', $settings['linkedin'] ?? '']));
+
+    $schema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'HomeAndConstructionBusiness',
+        'name' => $settings['site_name'],
+        'legalName' => $settings['legal_name'] ?? $settings['site_name'],
+        'description' => $settings['seo_default_description'] ?? $settings['footer_text'],
+        'telephone' => $settings['phone'],
+        'email' => $settings['email'],
+        'address' => [
+            '@type' => 'PostalAddress',
+            'streetAddress' => $settings['address'],
+            'addressCountry' => 'TR',
+        ],
+        'areaServed' => 'Ankara',
+        'url' => $origin,
+    ];
+
+    $logo = brandLogoUrl($settings);
+    if ($logo !== '') {
+        $schema['image'] = str_starts_with($logo, 'http') ? $logo : $origin . assetUrl($logo);
+    }
+    if ($hoursSpec !== []) {
+        $schema['openingHoursSpecification'] = $hoursSpec;
+    }
+    if ($sameAs !== []) {
+        $schema['sameAs'] = $sameAs;
+    }
+
+    return $schema;
 }
 
 /** Bir dizi içinden 'slug' alanı eşleşen ilk öğeyi döndürür, yoksa null. */

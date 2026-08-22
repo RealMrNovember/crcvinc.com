@@ -105,9 +105,12 @@ a { color: var(--accent); text-decoration: none; }
 .hero-video, .hero-fallback { position: absolute; inset: 0; width: 100%; height: 100%; }
 .hero-video iframe {
   position: absolute; top: 50%; left: 50%;
-  width: max(100vw, 177.78vh); height: max(100vh, 56.25vw);
-  width: max(100vw, 177.78dvh); height: max(100dvh, 56.25vw); /* video her ekran boyutunda kırpılmadan tam kaplasın */
-  min-width: 100%; min-height: 100%;
+  /* %140 fazladan büyütme: YouTube'un controls=0'a rağmen köşelere/kenarlara
+     sabitlediği başlık çubuğu, logo ve playlist ileri/geri arayüzünü görünür
+     alanın tamamen dışına itip .hero'nun overflow:hidden'ıyla kırpıyoruz. */
+  width: calc(max(100vw, 177.78vh) * 1.4); height: calc(max(100vh, 56.25vw) * 1.4);
+  width: calc(max(100vw, 177.78dvh) * 1.4); height: calc(max(100dvh, 56.25vw) * 1.4);
+  min-width: 140%; min-height: 140%;
   transform: translate(-50%, -50%);
   pointer-events: none; border: 0;
 }
@@ -180,6 +183,7 @@ a { color: var(--accent); text-decoration: none; }
 /* ---------- Kartlar ---------- */
 .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 22px; }
 .card {
+  display: block; color: inherit; text-decoration: none;
   background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
   padding: 30px 26px;
   transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
@@ -311,6 +315,7 @@ a { color: var(--accent); text-decoration: none; }
 }
 .project-detail-stat span:last-child { color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; }
 .project-detail-cta { text-align: center; }
+.project-detail-icon { display: flex; justify-content: center; color: var(--accent); }
 
 /* ---------- Blog ---------- */
 .blog-image img { width: 100%; height: 190px; object-fit: cover; display: block; }

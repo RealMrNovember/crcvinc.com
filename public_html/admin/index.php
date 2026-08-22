@@ -94,6 +94,21 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                         $site['blog']['page_intro'] = trim((string) ($_POST['blog_page_intro'] ?? ''));
                         $site['blog']['posts'] = sanitizeBlog($_POST, $_FILES);
                         break;
+                    case 'seo':
+                        $site['settings']['seo_default_description'] = trim((string) ($_POST['seo_default_description'] ?? ''));
+                        $site['settings']['seo_gsc_verification'] = trim((string) ($_POST['seo_gsc_verification'] ?? ''));
+                        $site['settings']['seo_ga_id'] = trim((string) ($_POST['seo_ga_id'] ?? ''));
+                        if (!empty($_POST['remove_og_image'])) {
+                            $site['settings']['seo_og_image'] = '';
+                        } elseif (!empty($_FILES['seo_og_image_file']['name'])) {
+                            $uploaded = handleImageUpload($_FILES['seo_og_image_file']);
+                            if ($uploaded === null) {
+                                $error = 'Görsel yüklenemedi: dosya türü desteklenmiyor veya boyutu 5MB üzerinde.';
+                            } else {
+                                $site['settings']['seo_og_image'] = $uploaded;
+                            }
+                        }
+                        break;
                     case 'texts':
                         $site['settings']['hero_kicker'] = trim((string) ($_POST['hero_kicker'] ?? ''));
                         $site['home'] = sanitizeHome($_POST);
@@ -124,7 +139,7 @@ function sanitizeSettings(array $post): array
 {
     $keys = ['site_name', 'legal_name', 'tagline', 'hero_video_id', 'hero_title', 'hero_subtitle',
         'hero_cta_primary', 'hero_cta_secondary', 'phone', 'phone_display', 'whatsapp', 'email',
-        'address', 'footer_text', 'instagram', 'linkedin', 'map_embed', 'preloader_text'];
+        'notification_email', 'address', 'footer_text', 'instagram', 'linkedin', 'map_embed', 'preloader_text'];
     $out = [];
     foreach ($keys as $key) {
         $out[$key] = trim((string) ($post[$key] ?? ''));
@@ -346,6 +361,9 @@ function sanitizeServices(array $post): array
     $icons = $post['service_icon'] ?? [];
     $titles = $post['service_title'] ?? [];
     $descs = $post['service_desc'] ?? [];
+    $contents = $post['service_content'] ?? [];
+    $slugs = $post['service_slug'] ?? [];
+    $existingSlugs = array_values(array_filter(array_map('strval', $slugs)));
     $out = [];
     foreach ($titles as $i => $title) {
         $title = trim((string) $title);
@@ -353,10 +371,17 @@ function sanitizeServices(array $post): array
             continue;
         }
         $icon = (string) ($icons[$i] ?? 'crane');
+        $slug = trim((string) ($slugs[$i] ?? ''));
+        if ($slug === '') {
+            $slug = slugify($title, $existingSlugs);
+            $existingSlugs[] = $slug;
+        }
         $out[] = [
+            'slug' => $slug,
             'icon' => in_array($icon, ['crane', 'basket', 'truck', 'gear'], true) ? $icon : 'crane',
             'title' => $title,
             'desc' => trim((string) ($descs[$i] ?? '')),
+            'content' => trim((string) ($contents[$i] ?? '')),
         ];
     }
     return $out;
@@ -396,16 +421,26 @@ function sanitizeFleet(array $post, array $files): array
     $titles = $post['fleet_title'] ?? [];
     $capacities = $post['fleet_capacity'] ?? [];
     $descs = $post['fleet_desc'] ?? [];
+    $contents = $post['fleet_content'] ?? [];
+    $slugs = $post['fleet_slug'] ?? [];
+    $existingSlugs = array_values(array_filter(array_map('strval', $slugs)));
     $out = [];
     foreach ($titles as $i => $title) {
         $title = trim((string) $title);
         if ($title === '') {
             continue;
         }
+        $slug = trim((string) ($slugs[$i] ?? ''));
+        if ($slug === '') {
+            $slug = slugify($title, $existingSlugs);
+            $existingSlugs[] = $slug;
+        }
         $out[] = [
+            'slug' => $slug,
             'title' => $title,
             'capacity' => trim((string) ($capacities[$i] ?? '')),
             'desc' => trim((string) ($descs[$i] ?? '')),
+            'content' => trim((string) ($contents[$i] ?? '')),
             'image' => resolveRowImage($post, $files, 'fleet_image', 'fleet_image_file', $i),
         ];
     }

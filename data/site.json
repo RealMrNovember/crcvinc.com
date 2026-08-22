@@ -17,11 +17,16 @@
         "phone_display": "0541 335 40 44",
         "whatsapp": "905413354044",
         "email": "info@crcvinc.com",
+        "notification_email": "",
         "address": "Bulvar Anatolia, İvedikköy, Anadolu Blv, 06378 Yenimahalle/Ankara",
         "footer_text": "CRC Vinç — Ankara merkezli vinç kiralama ve yedek parça tedarik firması.",
         "instagram": "",
         "linkedin": "",
-        "map_embed": ""
+        "map_embed": "",
+        "seo_default_description": "CRC Vinç — Ankara merkezli mobil vinç kiralama, sepetli platform, proje taşımacılığı ve yedek parça tedariki. 7/24 hizmet, sertifikalı operatör, sigortalı operasyon.",
+        "seo_og_image": "",
+        "seo_gsc_verification": "",
+        "seo_ga_id": ""
     },
     "menu": [
         {
@@ -77,43 +82,57 @@
     ],
     "services": [
         {
+            "slug": "mobil-vinc-kiralama",
             "icon": "crane",
             "title": "Mobil Vinç Kiralama",
-            "desc": "Saatlik, günlük ve proje bazlı mobil vinç kiralama. Sertifikalı operatör ve sigortalı operasyon."
+            "desc": "Saatlik, günlük ve proje bazlı mobil vinç kiralama. Sertifikalı operatör ve sigortalı operasyon.",
+            "content": "İhtiyacınıza uygun tonajda mobil vinç, sertifikalı operatörümüzle birlikte sahanıza gelir.\n\nSaatlik, günlük veya proje süresince kiralama seçenekleriyle esnek çalışma imkanı sunuyoruz. Tüm operasyonlarımız sigorta kapsamındadır."
         },
         {
+            "slug": "sepetli-platform",
             "icon": "basket",
             "title": "Sepetli Platform",
-            "desc": "Yüksekte güvenli çalışma için sepetli platform kiralama; cephe, montaj ve bakım işleri."
+            "desc": "Yüksekte güvenli çalışma için sepetli platform kiralama; cephe, montaj ve bakım işleri.",
+            "content": "Cephe çalışmaları, montaj ve bakım işleri için eklemli ve teleskopik sepetli platform filomuzla yüksekte güvenli erişim sağlıyoruz.\n\nOperatörlerimiz iş güvenliği eğitimlidir, tüm ekipmanlarımız periyodik bakımdan geçer."
         },
         {
+            "slug": "proje-tasimaciligi",
             "icon": "truck",
             "title": "Proje Taşımacılığı",
-            "desc": "Gabari dışı ve ağır yüklerin planlanması, taşınması ve yerine montajı."
+            "desc": "Gabari dışı ve ağır yüklerin planlanması, taşınması ve yerine montajı.",
+            "content": "Gabari dışı ve ağır yüklerin güzergah planlaması, gerekli izinlerin alınması, taşınması ve saha içi montajını uçtan uca yönetiyoruz.\n\nSaha keşfinden teslim anına kadar tüm süreçte yanınızdayız."
         },
         {
+            "slug": "yedek-parca-tedariki",
             "icon": "gear",
             "title": "Yedek Parça Tedariki",
-            "desc": "Vinç ve iş makineleri için ithalat/ihracat kanallarıyla hızlı yedek parça tedariki."
+            "desc": "Vinç ve iş makineleri için ithalat/ihracat kanallarıyla hızlı yedek parça tedariki.",
+            "content": "Vinç ve iş makineleriniz için ithalat/ihracat kanallarımız üzerinden orijinal ve muadil yedek parçaları hızlı şekilde temin ediyoruz.\n\nStok dışı parçalar için de tedarik desteği sağlıyoruz."
         }
     ],
     "fleet": [
         {
+            "slug": "mobil-vincler",
             "title": "Mobil Vinçler",
             "capacity": "25 – 500 ton",
             "desc": "Farklı tonaj sınıflarında, şehir içi ve saha operasyonlarına uygun mobil vinç filosu.",
+            "content": "25 tondan 500 tona kadar geniş bir tonaj yelpazesinde mobil vinç filomuz, şehir içi dar alan operasyonlarından büyük ölçekli saha işlerine kadar her ihtiyaca uygun çözüm sunar.\n\nDüzenli bakımdan geçen araçlarımız, sertifikalı operatörlerle birlikte hizmetinizdedir.",
             "image": ""
         },
         {
+            "slug": "sepetli-platformlar",
             "title": "Sepetli Platformlar",
             "capacity": "18 – 45 metre",
             "desc": "Eklemli ve teleskopik platformlarla yüksekte güvenli erişim.",
+            "content": "18 ile 45 metre arası çalışma yüksekliğine sahip eklemli ve teleskopik platformlarımızla, en zorlu erişim noktalarında bile güvenli çalışma imkanı sağlıyoruz.",
             "image": ""
         },
         {
+            "slug": "hiyap-vincler",
             "title": "Hiyap Vinçler",
             "capacity": "5 – 20 ton",
             "desc": "Yükleme, indirme ve taşıma işlerini tek araçla çözen hiyap filosu.",
+            "content": "5-20 ton kapasite aralığındaki hiyap vinçlerimiz, yükleme, indirme ve taşıma işlerini tek bir araçla hızlı ve pratik şekilde çözer.",
             "image": ""
         }
     ],
@@ -147,11 +166,26 @@
         }
     ],
     "clients": [
-        { "name": "Referans B", "logo": "" },
-        { "name": "Referans C", "logo": "" },
-        { "name": "Referans D", "logo": "" },
-        { "name": "Referans E", "logo": "" },
-        { "name": "Referans F", "logo": "" }
+        {
+            "name": "Referans B",
+            "logo": ""
+        },
+        {
+            "name": "Referans C",
+            "logo": ""
+        },
+        {
+            "name": "Referans D",
+            "logo": ""
+        },
+        {
+            "name": "Referans E",
+            "logo": ""
+        },
+        {
+            "name": "Referans F",
+            "logo": ""
+        }
     ],
     "home": {
         "services_kicker": "Hizmetlerimiz",

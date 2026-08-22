@@ -17,6 +17,7 @@ function renderAdminPanel(array $site, bool $saved, ?string $error): void
         'clients' => 'Referanslar',
         'texts' => 'Bölüm Başlıkları',
         'pages' => 'Sayfa Metinleri',
+        'seo' => 'SEO',
         'account' => 'Hesap',
     ];
     if (!isset($tabs[$activeTab])) {
@@ -70,6 +71,8 @@ function renderAdminPanel(array $site, bool $saved, ?string $error): void
       <?php renderTextsTab($site); ?>
     <?php elseif ($activeTab === 'pages'): ?>
       <?php renderPagesTab($site['pages']); ?>
+    <?php elseif ($activeTab === 'seo'): ?>
+      <?php renderSeoTab($settings); ?>
     <?php elseif ($activeTab === 'account'): ?>
       <?php renderAccountTab(); ?>
     <?php endif; ?>
@@ -135,8 +138,9 @@ function renderSettingsTab(array $s): void
         </div>
         <div class="admin-row">
           <label>WhatsApp numarası (ülke koduyla, + işaretsiz)<input type="text" name="whatsapp" value="<?= e($s['whatsapp']) ?>"></label>
-          <label>E-posta<input type="email" name="email" value="<?= e($s['email']) ?>"></label>
+          <label>E-posta (sitede görünen)<input type="email" name="email" value="<?= e($s['email']) ?>"></label>
         </div>
+        <label>Teklif formu bildirimleri hangi adrese gitsin? <span class="admin-hint-inline">(boş bırakılırsa yukarıdaki e-postaya gider)</span><input type="email" name="notification_email" value="<?= e($s['notification_email'] ?? '') ?>" placeholder="ör. teklifler@crcvinc.com"></label>
         <label>Adres<input type="text" name="address" value="<?= e($s['address']) ?>"></label>
         <div class="admin-row">
           <label>Instagram linki<input type="url" name="instagram" value="<?= e($s['instagram']) ?>"></label>
@@ -192,11 +196,13 @@ function renderServicesTab(array $services): void
 {
     ?>
     <h2>Hizmetler</h2>
+    <p class="admin-hint">Her hizmetin kendi detay sayfası vardır (site üzerinde tıklanabilir).</p>
     <form method="post">
       <?= csrfField() ?>
       <input type="hidden" name="tab" value="services">
       <?php foreach (repeatRows($services, 8) as $item): ?>
       <div class="admin-card-row">
+        <input type="hidden" name="service_slug[]" value="<?= e($item['slug'] ?? '') ?>">
         <div class="admin-row">
           <label>İkon
             <select name="service_icon[]">
@@ -207,7 +213,8 @@ function renderServicesTab(array $services): void
           </label>
           <label>Başlık<input type="text" name="service_title[]" value="<?= e($item['title'] ?? '') ?>"></label>
         </div>
-        <label>Açıklama<textarea name="service_desc[]" rows="2"><?= e($item['desc'] ?? '') ?></textarea></label>
+        <label>Kısa açıklama (kart üzerinde görünür)<textarea name="service_desc[]" rows="2"><?= e($item['desc'] ?? '') ?></textarea></label>
+        <label>Detay sayfası içeriği<textarea name="service_content[]" rows="4"><?= e($item['content'] ?? '') ?></textarea></label>
       </div>
       <?php endforeach; ?>
       <button type="submit" class="admin-save">Kaydet</button>
@@ -219,18 +226,20 @@ function renderFleetTab(array $fleet): void
 {
     ?>
     <h2>Makine Parkı</h2>
-    <p class="admin-hint">Görsel yüklemek için "Görsel Seç" ile bilgisayarınızdan bir fotoğraf seçin (en fazla 5MB).</p>
+    <p class="admin-hint">Görsel yüklemek için "Görsel Seç" ile bilgisayarınızdan bir fotoğraf seçin (en fazla 5MB). Her araç kendi detay sayfasına sahiptir (site üzerinde tıklanabilir).</p>
     <form method="post" enctype="multipart/form-data">
       <?= csrfField() ?>
       <input type="hidden" name="tab" value="fleet">
       <?php foreach (repeatRows($fleet, 8) as $item): ?>
       <div class="admin-card-row">
+        <input type="hidden" name="fleet_slug[]" value="<?= e($item['slug'] ?? '') ?>">
         <?php renderImagePicker($item['image'] ?? '', 'fleet_image') ?>
         <div class="admin-row">
           <label>Başlık<input type="text" name="fleet_title[]" value="<?= e($item['title'] ?? '') ?>"></label>
           <label>Kapasite (ör. 25–500 ton)<input type="text" name="fleet_capacity[]" value="<?= e($item['capacity'] ?? '') ?>"></label>
         </div>
-        <label>Açıklama<textarea name="fleet_desc[]" rows="2"><?= e($item['desc'] ?? '') ?></textarea></label>
+        <label>Kısa açıklama (kart üzerinde görünür)<textarea name="fleet_desc[]" rows="2"><?= e($item['desc'] ?? '') ?></textarea></label>
+        <label>Detay sayfası içeriği<textarea name="fleet_content[]" rows="4"><?= e($item['content'] ?? '') ?></textarea></label>
       </div>
       <?php endforeach; ?>
       <button type="submit" class="admin-save">Kaydet</button>
@@ -527,6 +536,54 @@ function renderPagesTab(array $pages): void
         <label>Metin<textarea name="page_body_<?= e($slug) ?>" rows="5"><?= e($page['body'] ?? '') ?></textarea></label>
       </fieldset>
       <?php endforeach; ?>
+      <button type="submit" class="admin-save">Kaydet</button>
+    </form>
+    <?php
+}
+
+function renderSeoTab(array $s): void
+{
+    ?>
+    <h2>SEO</h2>
+    <p class="admin-hint">Sitenin Google'da nasıl görüneceğini buradan yönetebilirsiniz. Site zaten arama motorlarına açık ve <code>sitemap.xml</code> otomatik güncelleniyor — bu ayarlar ek görünürlük ve takip içindir.</p>
+    <form method="post" enctype="multipart/form-data">
+      <?= csrfField() ?>
+      <input type="hidden" name="tab" value="seo">
+
+      <fieldset>
+        <legend>Varsayılan Açıklama</legend>
+        <p class="admin-hint">Sayfa kendi metni yoksa Google arama sonuçlarında bu açıklama gösterilir (150 karakter civarı önerilir).</p>
+        <textarea name="seo_default_description" rows="2" class="admin-textarea-wide"><?= e($s['seo_default_description'] ?? '') ?></textarea>
+      </fieldset>
+
+      <fieldset>
+        <legend>Sosyal Medya Paylaşım Görseli</legend>
+        <p class="admin-hint">Site linki WhatsApp, Facebook, Instagram gibi platformlarda paylaşılınca görünecek görsel (önerilen: 1200×630px).</p>
+        <div class="admin-image-picker">
+          <?php if (!empty($s['seo_og_image'])): ?>
+          <img src="<?= e(assetUrl($s['seo_og_image'])) ?>" alt="" class="admin-image-preview">
+          <?php else: ?>
+          <div class="admin-image-preview admin-image-preview-empty">Görsel yok</div>
+          <?php endif; ?>
+          <label class="admin-image-picker-label">Görsel Seç<input type="file" name="seo_og_image_file" accept=".svg,.png,.jpg,.jpeg,.webp"></label>
+        </div>
+        <?php if (!empty($s['seo_og_image'])): ?>
+        <label class="admin-checkbox-inline"><input type="checkbox" name="remove_og_image" value="1"> Görseli kaldır</label>
+        <?php endif; ?>
+      </fieldset>
+
+      <fieldset>
+        <legend>Google Search Console</legend>
+        <p class="admin-hint">Google Search Console'da (search.google.com/search-console) siteyi "HTML etiketi" yöntemiyle doğrularken verilen kodu buraya yapıştırın — sadece <code>content="..."</code> içindeki değeri girin.</p>
+        <input type="text" name="seo_gsc_verification" value="<?= e($s['seo_gsc_verification'] ?? '') ?>" placeholder="ör. AbCdEfGhIjKlMnOpQrStUvWxYz1234567890">
+      </fieldset>
+
+      <fieldset>
+        <legend>Google Analytics</legend>
+        <p class="admin-hint">Google Analytics (GA4) Ölçüm Kimliği — analytics.google.com üzerinden alınır, "G-" ile başlar.</p>
+        <input type="text" name="seo_ga_id" value="<?= e($s['seo_ga_id'] ?? '') ?>" placeholder="G-XXXXXXXXXX">
+      </fieldset>
+
       <button type="submit" class="admin-save">Kaydet</button>
     </form>
     <?php

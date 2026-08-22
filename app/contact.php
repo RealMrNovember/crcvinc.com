@@ -67,18 +67,43 @@ function storeContactMessage(array $fields): bool
     return $json !== false && file_put_contents($file, $json, LOCK_EX) !== false;
 }
 
-/** Hosting mail() destekliyorsa bildirimi info adresine yollar; başarısızlık sessizce geçilmez, log düşer. */
+/**
+ * Hosting mail() destekliyorsa bildirimi ilgili adrese yollar; başarısızlık sessizce
+ * geçilmez, log düşer (mesaj her durumda messages.json'da güvende kalır).
+ * Bildirim adresi ayarlanmışsa (notification_email) oraya, yoksa genel iletişim
+ * adresine gider — müşteri site üzerinde gösterilen adresi değiştirmeden formların
+ * ayrı bir kutuya düşmesini isteyebilir.
+ */
 function tryMailContactMessage(array $settings, array $fields): void
 {
-    $to = $settings['email'] ?? '';
+    $to = trim((string) ($settings['notification_email'] ?? '')) ?: ($settings['email'] ?? '');
     if ($to === '' || !function_exists('mail')) {
         return;
     }
-    $body = "Yeni teklif/iletişim mesajı:\n\n"
-        . "Ad: {$fields['name']}\nTelefon: {$fields['phone']}\nE-posta: {$fields['email']}\n\n"
-        . "Mesaj:\n{$fields['message']}\n";
-    $headers = 'From: site@crcvinc.com' . "\r\n" . 'Content-Type: text/plain; charset=UTF-8';
-    if (!@mail($to, 'CRC Vinç — Yeni İletişim Mesajı', $body, $headers)) {
+    $body = "Web sitesi iletişim formundan yeni bir mesaj geldi:\n\n"
+        . "Ad Soyad / Firma: {$fields['name']}\n"
+        . "Telefon: {$fields['phone']}\n"
+        . "E-posta: {$fields['email']}\n\n"
+        . "Mesaj:\n{$fields['message']}\n\n"
+        . '--' . "\n"
+        . 'Gönderim zamanı: ' . date('d.m.Y H:i') . "\n";
+
+    $subject = mimeEncodeHeader('CRC Vinç — Yeni İletişim Mesajı: ' . $fields['name']);
+    $fromName = mimeEncodeHeader($settings['site_name'] ?? 'CRC Vinç Web Sitesi');
+    $headers = "From: {$fromName} <site@crcvinc.com>\r\n"
+        . 'Content-Type: text/plain; charset=UTF-8' . "\r\n"
+        . 'X-Mailer: CRC Vinç Website';
+    if ($fields['email'] !== '' && filter_var($fields['email'], FILTER_VALIDATE_EMAIL)) {
+        $headers .= "\r\nReply-To: {$fields['email']}";
+    }
+
+    if (!@mail($to, $subject, $body, $headers)) {
         error_log('crcvinc: iletisim e-postasi gonderilemedi (mesaj messages.json icinde sakli).');
     }
+}
+
+/** Türkçe karakterli başlıkları mbstring olmadan MIME "encoded-word" biçimine çevirir. */
+function mimeEncodeHeader(string $text): string
+{
+    return '=?UTF-8?B?' . base64_encode($text) . '?=';
 }

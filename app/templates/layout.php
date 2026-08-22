@@ -1,11 +1,46 @@
-<?php /** @var array $settings @var string $content */ ?>
+<?php
+/** @var array $settings @var array $site @var string $content */
+
+// SEO: tüm sayfalar (crcvinc.com ve crcvinc.com.tr dahil) tek bir birincil alan adını
+// kanonik gösterir — aynı içeriğin iki domainde yayında olmasının Google'da "duplicate
+// content" sayılıp sıralama gücünün bölünmesini önler.
+const SEO_PRIMARY_ORIGIN = 'https://www.crcvinc.com';
+$seoPath = (string) (parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/');
+$seoCanonical = SEO_PRIMARY_ORIGIN . ($seoPath === '/' ? '' : rtrim($seoPath, '/'));
+$seoTitle = (isset($pageTitle) && $pageTitle ? $pageTitle . ' — ' : '') . $settings['site_name'] . ' | ' . $settings['tagline'];
+$seoDescription = $metaDescription ?? ($settings['seo_default_description'] ?? $settings['footer_text']);
+$seoImage = $ogImage ?? ($settings['seo_og_image'] ?? '');
+$seoImageUrl = $seoImage !== '' ? (str_starts_with($seoImage, 'http') ? $seoImage : SEO_PRIMARY_ORIGIN . assetUrl($seoImage)) : '';
+?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><?= isset($pageTitle) && $pageTitle ? e($pageTitle) . ' — ' : '' ?><?= e($settings['site_name']) ?> | <?= e($settings['tagline']) ?></title>
-<meta name="description" content="<?= e($settings['footer_text']) ?>">
+<title><?= e($seoTitle) ?></title>
+<meta name="description" content="<?= e($seoDescription) ?>">
+<link rel="canonical" href="<?= e($seoCanonical) ?>">
+<meta name="robots" content="index, follow">
+<?php if (!empty($settings['seo_gsc_verification'])): ?>
+<meta name="google-site-verification" content="<?= e($settings['seo_gsc_verification']) ?>">
+<?php endif; ?>
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="<?= e($settings['site_name']) ?>">
+<meta property="og:locale" content="tr_TR">
+<meta property="og:title" content="<?= e($seoTitle) ?>">
+<meta property="og:description" content="<?= e($seoDescription) ?>">
+<meta property="og:url" content="<?= e($seoCanonical) ?>">
+<?php if ($seoImageUrl !== ''): ?>
+<meta property="og:image" content="<?= e($seoImageUrl) ?>">
+<?php endif; ?>
+<meta name="twitter:card" content="<?= $seoImageUrl !== '' ? 'summary_large_image' : 'summary' ?>">
+<meta name="twitter:title" content="<?= e($seoTitle) ?>">
+<meta name="twitter:description" content="<?= e($seoDescription) ?>">
+<?php if ($seoImageUrl !== ''): ?>
+<meta name="twitter:image" content="<?= e($seoImageUrl) ?>">
+<?php endif; ?>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -13,17 +48,17 @@
 <link rel="icon" type="image/svg+xml" href="<?= e(assetUrl('/assets/img/favicon.svg')) ?>">
 <link rel="icon" type="image/png" sizes="32x32" href="<?= e(assetUrl('/assets/img/favicon-32.png')) ?>">
 <link rel="apple-touch-icon" href="<?= e(assetUrl('/assets/img/apple-touch-icon.png')) ?>">
+<?php if (!empty($settings['seo_ga_id'])): ?>
+<script async src="https://www.googletagmanager.com/gtag/js?id=<?= e($settings['seo_ga_id']) ?>"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', <?= json_encode($settings['seo_ga_id']) ?>);
+</script>
+<?php endif; ?>
 <script type="application/ld+json">
-<?= json_encode([
-    '@context' => 'https://schema.org',
-    '@type' => 'LocalBusiness',
-    'name' => $settings['site_name'],
-    'legalName' => $settings['legal_name'] ?? $settings['site_name'],
-    'telephone' => $settings['phone'],
-    'email' => $settings['email'],
-    'address' => $settings['address'],
-    'url' => 'https://www.crcvinc.com',
-], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>
+<?= json_encode(buildLocalBusinessSchema($settings, $site, SEO_PRIMARY_ORIGIN), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>
 
 </script>
 </head>
