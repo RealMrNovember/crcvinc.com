@@ -2,7 +2,8 @@
 declare(strict_types=1);
 
 const LOGO_MAX_BYTES = 2 * 1024 * 1024;
-const LOGO_ALLOWED = [
+const GALLERY_MAX_BYTES = 5 * 1024 * 1024;
+const IMAGE_ALLOWED = [
     'image/svg+xml' => 'svg',
     'image/png' => 'png',
     'image/jpeg' => 'jpg',
@@ -80,13 +81,18 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                         $site['services'] = sanitizeServices($_POST);
                         break;
                     case 'fleet':
-                        $site['fleet'] = sanitizeFleet($_POST);
+                        $site['fleet'] = sanitizeFleet($_POST, $_FILES);
                         break;
                     case 'projects':
-                        $site['projects'] = sanitizeProjects($_POST);
+                        $site['projects'] = sanitizeProjects($_POST, $_FILES);
                         break;
                     case 'clients':
                         $site['clients'] = sanitizeClients($_POST);
+                        break;
+                    case 'blog':
+                        $site['blog']['page_title'] = trim((string) ($_POST['blog_page_title'] ?? 'Blog'));
+                        $site['blog']['page_intro'] = trim((string) ($_POST['blog_page_intro'] ?? ''));
+                        $site['blog']['posts'] = sanitizeBlog($_POST, $_FILES);
                         break;
                     case 'texts':
                         $site['settings']['hero_kicker'] = trim((string) ($_POST['hero_kicker'] ?? ''));
@@ -154,12 +160,8 @@ function handleLogoUpload(array $file): ?string
             return null;
         }
     } else {
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mime = $finfo !== false ? finfo_file($finfo, $tmpPath) : false;
-        if ($finfo !== false) {
-            finfo_close($finfo);
-        }
-        if ($mime === false || !isset(LOGO_ALLOWED[$mime]) || LOGO_ALLOWED[$mime] !== $ext) {
+        $mime = detectImageMime($tmpPath);
+        if ($mime === null || !isset(IMAGE_ALLOWED[$mime]) || IMAGE_ALLOWED[$mime] !== $ext) {
             return null;
         }
     }
@@ -174,6 +176,107 @@ function handleLogoUpload(array $file): ?string
         return null;
     }
     return '/assets/img/logo-custom.' . $ext;
+}
+
+/** Galeri görselleri (makine parkı, projeler, blog) için genel amaçlı yükleme. Benzersiz dosya adıyla kaydeder. */
+function handleImageUpload(array $file): ?string
+{
+    if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+        return null;
+    }
+    if ((int) ($file['size'] ?? 0) <= 0 || (int) $file['size'] > GALLERY_MAX_BYTES) {
+        return null;
+    }
+    $tmpPath = (string) ($file['tmp_name'] ?? '');
+    if (!is_uploaded_file($tmpPath)) {
+        return null;
+    }
+
+    $ext = strtolower((string) pathinfo((string) ($file['name'] ?? ''), PATHINFO_EXTENSION));
+    if ($ext === 'jpeg') {
+        $ext = 'jpg';
+    }
+
+    if ($ext === 'svg') {
+        $content = (string) file_get_contents($tmpPath);
+        if (!looksLikeSafeSvg($content)) {
+            return null;
+        }
+    } else {
+        $mime = detectImageMime($tmpPath);
+        if ($mime === null || !isset(IMAGE_ALLOWED[$mime]) || IMAGE_ALLOWED[$mime] !== $ext) {
+            return null;
+        }
+    }
+
+    if (!in_array($ext, ['svg', 'png', 'jpg', 'webp'], true)) {
+        return null;
+    }
+
+    $dir = PUBLIC_DIR . '/assets/img/uploads';
+    if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) {
+        return null;
+    }
+    $name = bin2hex(random_bytes(8)) . '.' . $ext;
+    if (!move_uploaded_file($tmpPath, $dir . '/' . $name)) {
+        return null;
+    }
+    return '/assets/img/uploads/' . $name;
+}
+
+/** Başlıktan URL-dostu slug üretir (Türkçe karakterleri çevirir), verilen kümede benzersiz olacak şekilde sıra numarası ekler. */
+function slugify(string $text, array $existing = []): string
+{
+    $map = ['ç' => 'c', 'ğ' => 'g', 'ı' => 'i', 'ö' => 'o', 'ş' => 's', 'ü' => 'u',
+        'Ç' => 'c', 'Ğ' => 'g', 'İ' => 'i', 'Ö' => 'o', 'Ş' => 's', 'Ü' => 'u'];
+    $text = strtr($text, $map);
+    $text = strtolower($text);
+    $text = preg_replace('/[^a-z0-9]+/', '-', $text) ?? '';
+    $slug = trim($text, '-');
+    if ($slug === '') {
+        $slug = 'oge';
+    }
+    $base = $slug;
+    $i = 2;
+    while (in_array($slug, $existing, true)) {
+        $slug = $base . '-' . $i;
+        $i++;
+    }
+    return $slug;
+}
+
+/**
+ * Dosyanın gerçek MIME türünü tespit eder. Önce fileinfo eklentisini dener; eklenti
+ * sunucuda etkin değilse (bazı paylaşımlı hostinglerde kapalı olabiliyor) yaygın
+ * görsel formatlarının magic-byte imzalarına bakarak yedek bir tespit yapar.
+ */
+function detectImageMime(string $path): ?string
+{
+    if (function_exists('finfo_open')) {
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        if ($finfo !== false) {
+            $mime = finfo_file($finfo, $path);
+            finfo_close($finfo);
+            if ($mime !== false) {
+                return $mime;
+            }
+        }
+    }
+
+    $bytes = file_get_contents($path, false, null, 0, 12);
+    if ($bytes === false || strlen($bytes) < 4) {
+        return null;
+    }
+    if (str_starts_with($bytes, "\x89PNG\r\n\x1a\n")) {
+        return 'image/png';
+    }
+    if (str_starts_with($bytes, "\xFF\xD8\xFF")) {
+        return 'image/jpeg';
+    }
+    if (strlen($bytes) >= 12 && substr($bytes, 0, 4) === 'RIFF' && substr($bytes, 8, 4) === 'WEBP') {
+        return 'image/webp';
+    }
+    return null;
 }
 
 /** Basit SVG güvenlik kontrolü: script/olay işleyici/harici referans içeren dosyaları reddeder. */
@@ -259,12 +362,40 @@ function sanitizeServices(array $post): array
     return $out;
 }
 
-function sanitizeFleet(array $post): array
+/** name="field[]" şeklinde çoklu dosya inputundaki i. dosyayı tekil $_FILES formatına çevirir. */
+function extractFileAt(array $files, string $field, int $i): ?array
+{
+    if (!isset($files[$field]['error'][$i]) || $files[$field]['error'][$i] === UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+    return [
+        'name' => $files[$field]['name'][$i],
+        'type' => $files[$field]['type'][$i],
+        'tmp_name' => $files[$field]['tmp_name'][$i],
+        'error' => $files[$field]['error'][$i],
+        'size' => $files[$field]['size'][$i],
+    ];
+}
+
+/** Satırın mevcut (hidden alanla taşınan) görselini, varsa yeni yüklenen dosyayla değiştirir. */
+function resolveRowImage(array $post, array $files, string $textField, string $fileField, int $i): string
+{
+    $current = trim((string) (($post[$textField] ?? [])[$i] ?? ''));
+    $file = extractFileAt($files, $fileField, $i);
+    if ($file !== null) {
+        $uploaded = handleImageUpload($file);
+        if ($uploaded !== null) {
+            return $uploaded;
+        }
+    }
+    return $current;
+}
+
+function sanitizeFleet(array $post, array $files): array
 {
     $titles = $post['fleet_title'] ?? [];
     $capacities = $post['fleet_capacity'] ?? [];
     $descs = $post['fleet_desc'] ?? [];
-    $images = $post['fleet_image'] ?? [];
     $out = [];
     foreach ($titles as $i => $title) {
         $title = trim((string) $title);
@@ -275,33 +406,81 @@ function sanitizeFleet(array $post): array
             'title' => $title,
             'capacity' => trim((string) ($capacities[$i] ?? '')),
             'desc' => trim((string) ($descs[$i] ?? '')),
-            'image' => trim((string) ($images[$i] ?? '')),
+            'image' => resolveRowImage($post, $files, 'fleet_image', 'fleet_image_file', $i),
         ];
     }
     return $out;
 }
 
-function sanitizeProjects(array $post): array
+function sanitizeProjects(array $post, array $files): array
 {
     $titles = $post['project_title'] ?? [];
     $clients = $post['project_client'] ?? [];
     $stats = $post['project_stat'] ?? [];
     $descs = $post['project_desc'] ?? [];
-    $images = $post['project_image'] ?? [];
+    $contents = $post['project_content'] ?? [];
+    $slugs = $post['project_slug'] ?? [];
+    $existingSlugs = array_values(array_filter(array_map('strval', $slugs)));
     $out = [];
     foreach ($titles as $i => $title) {
         $title = trim((string) $title);
         if ($title === '') {
             continue;
         }
+        $slug = trim((string) ($slugs[$i] ?? ''));
+        if ($slug === '') {
+            $slug = slugify($title, $existingSlugs);
+            $existingSlugs[] = $slug;
+        }
         $out[] = [
+            'slug' => $slug,
             'title' => $title,
             'client' => trim((string) ($clients[$i] ?? '')),
             'stat' => trim((string) ($stats[$i] ?? '')),
             'desc' => trim((string) ($descs[$i] ?? '')),
-            'image' => trim((string) ($images[$i] ?? '')),
+            'content' => trim((string) ($contents[$i] ?? '')),
+            'image' => resolveRowImage($post, $files, 'project_image', 'project_image_file', $i),
         ];
     }
+    return $out;
+}
+
+function sanitizeBlog(array $post, array $files): array
+{
+    $titles = $post['blog_title'] ?? [];
+    $excerpts = $post['blog_excerpt'] ?? [];
+    $contents = $post['blog_content'] ?? [];
+    $dates = $post['blog_date'] ?? [];
+    $slugs = $post['blog_slug'] ?? [];
+    $published = $post['blog_published'] ?? [];
+    $existingSlugs = array_values(array_filter(array_map('strval', $slugs)));
+    $out = [];
+    foreach ($titles as $i => $title) {
+        $title = trim((string) $title);
+        if ($title === '') {
+            continue;
+        }
+        $slug = trim((string) ($slugs[$i] ?? ''));
+        if ($slug === '') {
+            $slug = slugify($title, $existingSlugs);
+            $existingSlugs[] = $slug;
+        }
+        $date = trim((string) ($dates[$i] ?? ''));
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+            $date = date('Y-m-d');
+        }
+        $out[] = [
+            'slug' => $slug,
+            'title' => $title,
+            'excerpt' => trim((string) ($excerpts[$i] ?? '')),
+            'content' => trim((string) ($contents[$i] ?? '')),
+            'image' => resolveRowImage($post, $files, 'blog_image', 'blog_image_file', $i),
+            'date' => $date,
+            'published' => ($published[$i] ?? '0') === '1',
+        ];
+    }
+    // en yeniden en eskiye sırala
+    usort($out, static fn (array $a, array $b): int => strcmp($b['date'], $a['date']));
     return $out;
 }
 

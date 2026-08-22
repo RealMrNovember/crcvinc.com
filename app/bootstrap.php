@@ -30,6 +30,34 @@ function brandLogoUrl(array $settings): string
     return $custom !== '' ? $custom : '/assets/img/logo-mark-light.svg';
 }
 
+/** "2026-08-01" biçimindeki tarihi "1 Ağustos 2026" olarak Türkçe biçimlendirir. */
+function formatTurkishDate(string $date): string
+{
+    $months = [1 => 'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+        'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+    $parts = explode('-', $date);
+    if (count($parts) !== 3) {
+        return $date;
+    }
+    [$y, $m, $d] = $parts;
+    $monthIndex = (int) $m;
+    if ($monthIndex < 1 || $monthIndex > 12) {
+        return $date;
+    }
+    return ((int) $d) . ' ' . $months[$monthIndex] . ' ' . $y;
+}
+
+/** Bir dizi içinden 'slug' alanı eşleşen ilk öğeyi döndürür, yoksa null. */
+function findBySlug(array $items, string $slug): ?array
+{
+    foreach ($items as $item) {
+        if (($item['slug'] ?? '') === $slug) {
+            return $item;
+        }
+    }
+    return null;
+}
+
 /** HTML çıktısı için güvenli kaçış. */
 function e(?string $value): string
 {

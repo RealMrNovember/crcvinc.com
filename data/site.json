@@ -3,7 +3,7 @@
         "site_name": "CRC Vinç",
         "legal_name": "CRC Vinç Kiralama Yedek Parça İthalat İhracat San. Tic. Ltd. Şti.",
         "tagline": "Ağır Kaldırmanın Güvenilir Gücü",
-        "hero_video_id": "",
+        "hero_video_id": "SAi2JAGTFO0",
         "logo_path": "",
         "preloader_enabled": true,
         "preloader_duration": 400,
@@ -43,6 +43,10 @@
         {
             "label": "Kurumsal",
             "url": "/kurumsal"
+        },
+        {
+            "label": "Blog",
+            "url": "/blog"
         },
         {
             "label": "İletişim",
@@ -115,29 +119,34 @@
     ],
     "projects": [
         {
+            "slug": "endustriyel-montaj",
             "title": "Örnek Proje — Endüstriyel Montaj",
             "client": "Müşteri Adı",
             "stat": "120 ton",
             "desc": "Fabrika sahasında 120 tonluk ekipmanın kaldırılması ve yerine montajı.",
-            "image": ""
+            "content": "Bu projede fabrika sahasına yerleştirilecek 120 tonluk ağır ekipmanın kaldırılması ve hassas konumlandırılması gerçekleştirildi.\n\nSaha keşfi, kaldırma planı ve risk değerlendirmesinin ardından operasyon sertifikalı operatörlerimiz eşliğinde güvenli şekilde tamamlandı.",
+            "image": "https://crcdynamic.com/wp-content/uploads/2025/07/RENTAL-768x768.jpg"
         },
         {
+            "slug": "enerji-sahasi",
             "title": "Örnek Proje — Enerji Sahası",
             "client": "Müşteri Adı",
             "stat": "85 ton",
             "desc": "Enerji santrali sahasında türbin ekipmanlarının indirilmesi ve konumlandırılması.",
+            "content": "Enerji santrali sahasında türbin ekipmanlarının indirilmesi, taşınması ve montaj noktasına hassas şekilde konumlandırılması sağlandı.\n\nOperasyon boyunca saha güvenliği ve zaman planlaması titizlikle yönetildi.",
             "image": ""
         },
         {
+            "slug": "santiye-operasyonu",
             "title": "Örnek Proje — Şantiye Operasyonu",
             "client": "Müşteri Adı",
             "stat": "200 ton",
             "desc": "Şantiye sahasında prefabrik elemanların yüksek tonajlı vinçle montajı.",
+            "content": "Şantiye sahasında prefabrik yapı elemanlarının yüksek tonajlı mobil vinçle kaldırılıp montaj noktalarına yerleştirilmesi işlemi gerçekleştirildi.\n\nProje, sıkı bir zaman çizelgesi içinde kesintisiz olarak tamamlandı.",
             "image": ""
         }
     ],
     "clients": [
-        "Referans A",
         "Referans B",
         "Referans C",
         "Referans D",
@@ -177,6 +186,21 @@
         "hero_subtitle": "Tonaj ve saha bilginizi iletin, aynı gün dönüş yapalım.",
         "info_title": "Bize Ulaşın",
         "form_title": "Teklif Formu"
+    },
+    "blog": {
+        "page_title": "Blog",
+        "page_intro": "Sektörden haberler, saha tecrübelerimiz ve vinç kiralama rehberleri.",
+        "posts": [
+            {
+                "slug": "vinc-kiralama-rehberi",
+                "title": "Doğru Vinç Kiralama Rehberi",
+                "excerpt": "Projeniz için doğru tonaj ve vinç tipini seçerken dikkat edilmesi gereken temel noktalar.",
+                "content": "Vinç kiralarken saha koşulları, kaldırılacak yükün ağırlığı ve erişim mesafesi gibi faktörler doğru ekipman seçiminde belirleyicidir.\n\nCRC Vinç olarak saha keşfinden operasyon sonuna kadar süreci sizinle birlikte planlıyor, en uygun makineyi öneriyoruz.",
+                "image": "",
+                "date": "2026-08-01",
+                "published": true
+            }
+        ]
     },
     "hours": [
         {

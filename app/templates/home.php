@@ -8,8 +8,10 @@ $videoId = youtubeId($settings['hero_video_id'] ?? '');
   <?php if ($videoId !== ''): ?>
   <div class="hero-video" aria-hidden="true">
     <iframe
-      src="https://www.youtube-nocookie.com/embed/<?= e($videoId) ?>?autoplay=1&mute=1&loop=1&playlist=<?= e($videoId) ?>&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&disablekb=1"
+      src="https://www.youtube-nocookie.com/embed/<?= e($videoId) ?>?autoplay=1&mute=1&loop=1&playlist=<?= e($videoId) ?>&controls=0&showinfo=0&rel=0&fs=0&iv_load_policy=3&modestbranding=1&playsinline=1&disablekb=1"
       title="Tanıtım videosu" frameborder="0" allow="autoplay; encrypted-media" tabindex="-1"></iframe>
+    <!-- YouTube oynat/duraklat ikonu bazen kısa süreliğine görünür; bu katman tüm tıklama/dokunma olaylarını yutarak izleyicinin videoyla etkileşime girmesini tamamen engeller -->
+    <div class="hero-video-shield"></div>
   </div>
   <?php else: ?>
   <div class="hero-fallback" aria-hidden="true"></div>

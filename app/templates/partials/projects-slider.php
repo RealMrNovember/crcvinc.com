@@ -2,7 +2,7 @@
 <div class="slider" data-slider>
   <div class="slider-track">
     <?php foreach ($projects as $project): ?>
-    <article class="slide project-card">
+    <a class="slide project-card" href="/projeler/<?= e($project['slug'] ?? '') ?>">
       <?php if (!empty($project['image'])): ?>
       <div class="project-image"><img src="<?= e($project['image']) ?>" alt="<?= e($project['title']) ?>" loading="lazy"></div>
       <?php else: ?>
@@ -13,8 +13,9 @@
         <h3><?= e($project['title']) ?></h3>
         <p class="project-client"><?= e($project['client']) ?></p>
         <p><?= e($project['desc']) ?></p>
+        <span class="project-more">Detayları Gör →</span>
       </div>
-    </article>
+    </a>
     <?php endforeach; ?>
   </div>
   <div class="slider-nav">

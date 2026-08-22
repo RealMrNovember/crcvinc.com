@@ -13,6 +13,7 @@ function renderAdminPanel(array $site, bool $saved, ?string $error): void
         'services' => 'Hizmetler',
         'fleet' => 'Makine Parkı',
         'projects' => 'Projeler',
+        'blog' => 'Blog',
         'clients' => 'Referanslar',
         'texts' => 'Bölüm Başlıkları',
         'pages' => 'Sayfa Metinleri',
@@ -61,6 +62,8 @@ function renderAdminPanel(array $site, bool $saved, ?string $error): void
       <?php renderFleetTab($site['fleet']); ?>
     <?php elseif ($activeTab === 'projects'): ?>
       <?php renderProjectsTab($site['projects']); ?>
+    <?php elseif ($activeTab === 'blog'): ?>
+      <?php renderBlogTab($site['blog'] ?? ['page_title' => 'Blog', 'page_intro' => '', 'posts' => []]); ?>
     <?php elseif ($activeTab === 'clients'): ?>
       <?php renderClientsTab($site['clients']); ?>
     <?php elseif ($activeTab === 'texts'): ?>
@@ -216,18 +219,18 @@ function renderFleetTab(array $fleet): void
 {
     ?>
     <h2>Makine Parkı</h2>
-    <p class="admin-hint">Görsel alanına, medya yöneticinize yüklediğiniz görselin adres (URL) yolunu yazın — ör. /assets/img/mobil-vinc.jpg</p>
-    <form method="post">
+    <p class="admin-hint">Görsel yüklemek için "Görsel Seç" ile bilgisayarınızdan bir fotoğraf seçin (en fazla 5MB).</p>
+    <form method="post" enctype="multipart/form-data">
       <?= csrfField() ?>
       <input type="hidden" name="tab" value="fleet">
       <?php foreach (repeatRows($fleet, 8) as $item): ?>
       <div class="admin-card-row">
+        <?php renderImagePicker($item['image'] ?? '', 'fleet_image') ?>
         <div class="admin-row">
           <label>Başlık<input type="text" name="fleet_title[]" value="<?= e($item['title'] ?? '') ?>"></label>
           <label>Kapasite (ör. 25–500 ton)<input type="text" name="fleet_capacity[]" value="<?= e($item['capacity'] ?? '') ?>"></label>
         </div>
         <label>Açıklama<textarea name="fleet_desc[]" rows="2"><?= e($item['desc'] ?? '') ?></textarea></label>
-        <label>Görsel URL<input type="text" name="fleet_image[]" value="<?= e($item['image'] ?? '') ?>"></label>
       </div>
       <?php endforeach; ?>
       <button type="submit" class="admin-save">Kaydet</button>
@@ -239,24 +242,81 @@ function renderProjectsTab(array $projects): void
 {
     ?>
     <h2>Projeler</h2>
-    <form method="post">
+    <p class="admin-hint">Görsel yüklemek için "Görsel Seç" ile bilgisayarınızdan bir fotoğraf seçin (en fazla 5MB). Her proje kendi detay sayfasında (site üzerinde tıklanabilir) görüntülenir.</p>
+    <form method="post" enctype="multipart/form-data">
       <?= csrfField() ?>
       <input type="hidden" name="tab" value="projects">
       <?php foreach (repeatRows($projects, 9) as $item): ?>
       <div class="admin-card-row">
+        <input type="hidden" name="project_slug[]" value="<?= e($item['slug'] ?? '') ?>">
+        <?php renderImagePicker($item['image'] ?? '', 'project_image') ?>
         <div class="admin-row">
           <label>Başlık<input type="text" name="project_title[]" value="<?= e($item['title'] ?? '') ?>"></label>
           <label>Müşteri<input type="text" name="project_client[]" value="<?= e($item['client'] ?? '') ?>"></label>
         </div>
-        <div class="admin-row">
-          <label>Rakam (ör. 120 ton)<input type="text" name="project_stat[]" value="<?= e($item['stat'] ?? '') ?>"></label>
-          <label>Görsel URL<input type="text" name="project_image[]" value="<?= e($item['image'] ?? '') ?>"></label>
-        </div>
-        <label>Açıklama<textarea name="project_desc[]" rows="2"><?= e($item['desc'] ?? '') ?></textarea></label>
+        <label>Rakam (ör. 120 ton)<input type="text" name="project_stat[]" value="<?= e($item['stat'] ?? '') ?>"></label>
+        <label>Kısa açıklama (kart üzerinde görünür)<textarea name="project_desc[]" rows="2"><?= e($item['desc'] ?? '') ?></textarea></label>
+        <label>Detay sayfası içeriği (proje sayfasının tamamında görünür)<textarea name="project_content[]" rows="4"><?= e($item['content'] ?? '') ?></textarea></label>
       </div>
       <?php endforeach; ?>
       <button type="submit" class="admin-save">Kaydet</button>
     </form>
+    <?php
+}
+
+function renderBlogTab(array $blog): void
+{
+    $posts = repeatRows($blog['posts'] ?? [], 6);
+    ?>
+    <h2>Blog</h2>
+    <p class="admin-hint">Yayınla kutusunu işaretlemezseniz yazı taslak olarak kalır, sitede görünmez.</p>
+    <form method="post" enctype="multipart/form-data">
+      <?= csrfField() ?>
+      <input type="hidden" name="tab" value="blog">
+      <fieldset>
+        <legend>Blog Sayfası</legend>
+        <div class="admin-row">
+          <label>Sayfa başlığı<input type="text" name="blog_page_title" value="<?= e($blog['page_title'] ?? 'Blog') ?>"></label>
+          <label>Sayfa alt yazısı<input type="text" name="blog_page_intro" value="<?= e($blog['page_intro'] ?? '') ?>"></label>
+        </div>
+      </fieldset>
+      <?php foreach ($posts as $i => $item): ?>
+      <div class="admin-card-row">
+        <input type="hidden" name="blog_slug[]" value="<?= e($item['slug'] ?? '') ?>">
+        <?php renderImagePicker($item['image'] ?? '', 'blog_image') ?>
+        <div class="admin-row">
+          <label>Başlık<input type="text" name="blog_title[]" value="<?= e($item['title'] ?? '') ?>"></label>
+          <label>Tarih<input type="date" name="blog_date[]" value="<?= e($item['date'] ?? date('Y-m-d')) ?>"></label>
+        </div>
+        <label>Özet (listede görünür)<textarea name="blog_excerpt[]" rows="2"><?= e($item['excerpt'] ?? '') ?></textarea></label>
+        <label>İçerik (yazının tamamı)<textarea name="blog_content[]" rows="5"><?= e($item['content'] ?? '') ?></textarea></label>
+        <label class="admin-checkbox-inline">
+          <input type="hidden" name="blog_published[<?= $i ?>]" value="0">
+          <input type="checkbox" name="blog_published[<?= $i ?>]" value="1" <?= !empty($item['published']) ? 'checked' : '' ?>>
+          Yayınla
+        </label>
+      </div>
+      <?php endforeach; ?>
+      <button type="submit" class="admin-save">Kaydet</button>
+    </form>
+    <?php
+}
+
+/** Görsel yükleme alanı: mevcut önizleme + dosya seçici + eski değeri taşıyan gizli alan. */
+function renderImagePicker(string $currentImage, string $fieldName): void
+{
+    ?>
+    <div class="admin-image-picker">
+      <?php if ($currentImage !== ''): ?>
+      <img src="<?= e(assetUrl($currentImage)) ?>" alt="" class="admin-image-preview">
+      <?php else: ?>
+      <div class="admin-image-preview admin-image-preview-empty">Görsel yok</div>
+      <?php endif; ?>
+      <label class="admin-image-picker-label">Görsel Seç
+        <input type="hidden" name="<?= e($fieldName) ?>[]" value="<?= e($currentImage) ?>">
+        <input type="file" name="<?= e($fieldName) ?>_file[]" accept=".svg,.png,.jpg,.jpeg,.webp">
+      </label>
+    </div>
     <?php
 }
 
