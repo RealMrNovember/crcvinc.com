@@ -23,6 +23,13 @@ function firstChar(string $text): string
     return $matches[0] ?? '';
 }
 
+/** Marka logosunun URL'ini döndürür — admin panelden yüklenmiş özel logo varsa onu, yoksa varsayılan CRC amblemini kullanır. */
+function brandLogoUrl(array $settings): string
+{
+    $custom = trim((string) ($settings['logo_path'] ?? ''));
+    return $custom !== '' ? $custom : '/assets/img/logo-mark-light.svg';
+}
+
 /** HTML çıktısı için güvenli kaçış. */
 function e(?string $value): string
 {

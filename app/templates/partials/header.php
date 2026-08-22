@@ -11,7 +11,7 @@
 <header class="site-header" data-header>
   <div class="container header-inner">
     <a class="brand" href="/">
-      <span class="brand-mark" aria-hidden="true">CRC</span>
+      <img class="brand-logo" src="<?= e(assetUrl(brandLogoUrl($settings))) ?>" alt="<?= e($settings['site_name']) ?>" width="40" height="40">
       <span class="brand-text"><?= e($settings['site_name']) ?></span>
     </a>
     <nav class="site-nav" data-nav aria-label="Ana menü">

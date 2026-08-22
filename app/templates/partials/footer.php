@@ -2,7 +2,10 @@
 <footer class="site-footer">
   <div class="container footer-grid">
     <div>
-      <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">CRC</span> <span class="brand-text"><?= e($settings['site_name']) ?></span></a>
+      <a class="brand" href="/">
+        <img class="brand-logo" src="<?= e(assetUrl(brandLogoUrl($settings))) ?>" alt="<?= e($settings['site_name']) ?>" width="40" height="40">
+        <span class="brand-text"><?= e($settings['site_name']) ?></span>
+      </a>
       <p class="footer-about"><?= e($settings['footer_text']) ?></p>
     </div>
     <div>

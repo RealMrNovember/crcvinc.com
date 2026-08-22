@@ -90,6 +90,18 @@ textarea { resize: vertical; }
 .admin-hint-inline { color: var(--a-muted); font-weight: 400; }
 .admin-account-form { max-width: 460px; }
 
+.admin-logo-preview {
+  display: flex; align-items: center; justify-content: center;
+  background: #12161d; border-radius: var(--a-radius); padding: 20px; margin-bottom: 14px;
+}
+.admin-logo-current { max-height: 64px; max-width: 220px; width: auto; height: auto; }
+.admin-checkbox-inline { flex-direction: row; align-items: center; gap: 8px; }
+.admin-checkbox-inline input { width: auto; }
+.admin-save-secondary {
+  background: transparent; color: var(--a-text); border: 1px solid var(--a-line); margin-left: 10px;
+}
+.admin-save-secondary:hover { background: var(--a-bg); }
+
 @media (max-width: 760px) {
   .admin-shell { flex-direction: column; }
   .admin-tabs { width: 100%; flex-direction: row; overflow-x: auto; }

@@ -4,6 +4,10 @@
         "legal_name": "CRC Vinç Kiralama Yedek Parça İthalat İhracat San. Tic. Ltd. Şti.",
         "tagline": "Ağır Kaldırmanın Güvenilir Gücü",
         "hero_video_id": "",
+        "logo_path": "",
+        "preloader_enabled": true,
+        "preloader_duration": 400,
+        "preloader_text": "CRC Vinç",
         "hero_kicker": "7/24 Vinç Kiralama & Ağır Kaldırma",
         "hero_title": "Her Yükün Altından Kalkarız",
         "hero_subtitle": "Mobil vinç kiralama, proje taşımacılığı ve yedek parça tedarikinde 7/24 çözüm ortağınız.",
@@ -151,10 +155,22 @@
         "cta_subtitle": "Tonaj ve saha bilginizi iletin, aynı gün dönüş yapalım."
     },
     "safety": [
-        { "title": "Sigortalı Operasyon", "desc": "Mali mesuliyet poliçeli işler" },
-        { "title": "Sertifikalı Operatör", "desc": "Belgeli ve deneyimli ekip" },
-        { "title": "Günlük Bakım", "desc": "Her araçta periyodik kontrol" },
-        { "title": "7/24 Ulaşım", "desc": "Gece gündüz sahadayız" }
+        {
+            "title": "Sigortalı Operasyon",
+            "desc": "Mali mesuliyet poliçeli işler"
+        },
+        {
+            "title": "Sertifikalı Operatör",
+            "desc": "Belgeli ve deneyimli ekip"
+        },
+        {
+            "title": "Günlük Bakım",
+            "desc": "Her araçta periyodik kontrol"
+        },
+        {
+            "title": "7/24 Ulaşım",
+            "desc": "Gece gündüz sahadayız"
+        }
     ],
     "contact": {
         "hero_title": "İletişim & Teklif",
@@ -163,13 +179,34 @@
         "form_title": "Teklif Formu"
     },
     "hours": [
-        { "day": "Pazartesi", "value": "09:00–18:00" },
-        { "day": "Salı", "value": "09:00–18:00" },
-        { "day": "Çarşamba", "value": "09:00–18:00" },
-        { "day": "Perşembe", "value": "09:00–18:00" },
-        { "day": "Cuma", "value": "09:00–18:00" },
-        { "day": "Cumartesi", "value": "09:00–18:00" },
-        { "day": "Pazar", "value": "Kapalı" }
+        {
+            "day": "Pazartesi",
+            "value": "09:00–18:00"
+        },
+        {
+            "day": "Salı",
+            "value": "09:00–18:00"
+        },
+        {
+            "day": "Çarşamba",
+            "value": "09:00–18:00"
+        },
+        {
+            "day": "Perşembe",
+            "value": "09:00–18:00"
+        },
+        {
+            "day": "Cuma",
+            "value": "09:00–18:00"
+        },
+        {
+            "day": "Cumartesi",
+            "value": "09:00–18:00"
+        },
+        {
+            "day": "Pazar",
+            "value": "Kapalı"
+        }
     ],
     "founder": {
         "name": "Ahmet Çerçi",

@@ -4,6 +4,28 @@
 
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* Preloader: sayfa yüklenince (en az 400ms göründükten sonra) kapat.
+     CSS'teki preloader-autohide animasyonu JS hiç çalışmasa da 4sn sonra kendini kapatır (güvenlik ağı). */
+  var preloader = document.getElementById('preloader');
+  if (preloader) {
+    var preloaderStart = Date.now();
+    var minDuration = parseInt(preloader.getAttribute('data-min-duration'), 10);
+    if (isNaN(minDuration) || minDuration < 0) minDuration = 400;
+    var hidePreloader = function () {
+      if (preloader.classList.contains('is-hidden')) return;
+      var elapsed = Date.now() - preloaderStart;
+      var wait = Math.max(0, minDuration - elapsed);
+      setTimeout(function () {
+        preloader.classList.add('is-hidden');
+        setTimeout(function () {
+          if (preloader.parentNode) preloader.parentNode.removeChild(preloader);
+        }, 600);
+      }, wait);
+    };
+    window.addEventListener('load', hidePreloader);
+    setTimeout(hidePreloader, 3000);
+  }
+
   /* Scroll'da header'a çizgi/gölge */
   var header = document.querySelector('[data-header]');
   if (header) {

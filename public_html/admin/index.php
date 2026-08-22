@@ -1,6 +1,14 @@
 <?php
 declare(strict_types=1);
 
+const LOGO_MAX_BYTES = 2 * 1024 * 1024;
+const LOGO_ALLOWED = [
+    'image/svg+xml' => 'svg',
+    'image/png' => 'png',
+    'image/jpeg' => 'jpg',
+    'image/webp' => 'webp',
+];
+
 require dirname(__DIR__, 2) . '/app/bootstrap.php';
 require APP_DIR . '/auth.php';
 
@@ -45,6 +53,22 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                 switch ($tab) {
                     case 'settings':
                         $site['settings'] = array_merge($site['settings'], sanitizeSettings($_POST));
+                        if (($_POST['preloader_action'] ?? '') === 'reset') {
+                            $site['settings']['preloader_enabled'] = true;
+                            $site['settings']['preloader_duration'] = 400;
+                            $site['settings']['preloader_text'] = 'CRC Vinç';
+                        }
+                        if (!empty($_POST['remove_logo'])) {
+                            removeCustomLogo();
+                            $site['settings']['logo_path'] = '';
+                        } elseif (!empty($_FILES['logo_file']['name'])) {
+                            $uploaded = handleLogoUpload($_FILES['logo_file']);
+                            if ($uploaded === null) {
+                                $error = 'Logo yüklenemedi: dosya türü desteklenmiyor veya boyutu 2MB üzerinde. İzin verilen türler: SVG, PNG, JPG, WEBP.';
+                            } else {
+                                $site['settings']['logo_path'] = $uploaded;
+                            }
+                        }
                         break;
                     case 'menu':
                         $site['menu'] = sanitizeMenu($_POST);
@@ -76,7 +100,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                         $site['pages'] = sanitizePages($_POST, $site['pages']);
                         break;
                 }
-                if (!saveSiteContent($site)) {
+                if ($error !== null) {
+                    // logo yükleme gibi ön adımlarda hata oluştuysa kaydetmeyi atla
+                } elseif (!saveSiteContent($site)) {
                     $error = 'Kaydedilemedi. Sunucuda data/site.json dosyasına yazma izni olduğundan emin olun.';
                 } else {
                     $saved = true;
@@ -92,13 +118,89 @@ function sanitizeSettings(array $post): array
 {
     $keys = ['site_name', 'legal_name', 'tagline', 'hero_video_id', 'hero_title', 'hero_subtitle',
         'hero_cta_primary', 'hero_cta_secondary', 'phone', 'phone_display', 'whatsapp', 'email',
-        'address', 'footer_text', 'instagram', 'linkedin', 'map_embed'];
+        'address', 'footer_text', 'instagram', 'linkedin', 'map_embed', 'preloader_text'];
     $out = [];
     foreach ($keys as $key) {
         $out[$key] = trim((string) ($post[$key] ?? ''));
     }
     $out['hero_video_id'] = youtubeId($out['hero_video_id']);
+    $out['preloader_enabled'] = isset($post['preloader_enabled']);
+    $out['preloader_duration'] = max(0, min(3000, (int) ($post['preloader_duration'] ?? 400)));
     return $out;
+}
+
+/** Yüklenen logo dosyasını doğrular, önceki özel logoyu temizler ve yenisini kaydeder. Başarısızsa null döner. */
+function handleLogoUpload(array $file): ?string
+{
+    if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+        return null;
+    }
+    if ((int) ($file['size'] ?? 0) <= 0 || (int) $file['size'] > LOGO_MAX_BYTES) {
+        return null;
+    }
+    $tmpPath = (string) ($file['tmp_name'] ?? '');
+    if (!is_uploaded_file($tmpPath)) {
+        return null;
+    }
+
+    $ext = strtolower((string) pathinfo((string) ($file['name'] ?? ''), PATHINFO_EXTENSION));
+    if ($ext === 'jpeg') {
+        $ext = 'jpg';
+    }
+
+    if ($ext === 'svg') {
+        $content = (string) file_get_contents($tmpPath);
+        if (!looksLikeSafeSvg($content)) {
+            return null;
+        }
+    } else {
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = $finfo !== false ? finfo_file($finfo, $tmpPath) : false;
+        if ($finfo !== false) {
+            finfo_close($finfo);
+        }
+        if ($mime === false || !isset(LOGO_ALLOWED[$mime]) || LOGO_ALLOWED[$mime] !== $ext) {
+            return null;
+        }
+    }
+
+    if (!in_array($ext, ['svg', 'png', 'jpg', 'webp'], true)) {
+        return null;
+    }
+
+    removeCustomLogo();
+    $target = PUBLIC_DIR . '/assets/img/logo-custom.' . $ext;
+    if (!move_uploaded_file($tmpPath, $target)) {
+        return null;
+    }
+    return '/assets/img/logo-custom.' . $ext;
+}
+
+/** Basit SVG güvenlik kontrolü: script/olay işleyici/harici referans içeren dosyaları reddeder. */
+function looksLikeSafeSvg(string $content): bool
+{
+    if (stripos($content, '<svg') === false) {
+        return false;
+    }
+    $dangerous = ['<script', 'javascript:', 'data:text/html', 'onload=', 'onerror=', 'onclick=', '<foreignobject', '<iframe'];
+    $lower = strtolower($content);
+    foreach ($dangerous as $pattern) {
+        if (str_contains($lower, $pattern)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/** Önceki özel logo dosyasını (hangi uzantıdaysa) siler. */
+function removeCustomLogo(): void
+{
+    foreach (['svg', 'png', 'jpg', 'webp'] as $ext) {
+        $path = PUBLIC_DIR . '/assets/img/logo-custom.' . $ext;
+        if (is_file($path)) {
+            unlink($path);
+        }
+    }
 }
 
 function sanitizeMenu(array $post): array

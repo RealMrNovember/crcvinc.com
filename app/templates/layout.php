@@ -10,6 +10,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="<?= e(assetUrl('/assets/css/main.css')) ?>">
+<link rel="icon" type="image/svg+xml" href="<?= e(assetUrl('/assets/img/favicon.svg')) ?>">
+<link rel="icon" type="image/png" sizes="32x32" href="<?= e(assetUrl('/assets/img/favicon-32.png')) ?>">
+<link rel="apple-touch-icon" href="<?= e(assetUrl('/assets/img/apple-touch-icon.png')) ?>">
 <script type="application/ld+json">
 <?= json_encode([
     '@context' => 'https://schema.org',
@@ -25,6 +28,9 @@
 </script>
 </head>
 <body class="<?= e($bodyClass ?? '') ?>">
+<?php if ($settings['preloader_enabled'] ?? true): ?>
+<?= render('partials/preloader', ['settings' => $settings]) ?>
+<?php endif; ?>
 <?= render('partials/header', ['settings' => $settings, 'site' => $site]) ?>
 <main>
 <?= $content ?>

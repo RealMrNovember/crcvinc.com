@@ -82,9 +82,30 @@ function renderSettingsTab(array $s): void
     ?>
     <h2>Genel Bilgiler &amp; Hero</h2>
     <p class="admin-hint">Hero alanındaki YouTube videosunu buradan değiştirebilirsiniz — tam link (ör. https://youtu.be/...) veya sadece video ID'sini yapıştırmanız yeterli.</p>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
       <?= csrfField() ?>
       <input type="hidden" name="tab" value="settings">
+      <fieldset>
+        <legend>Logo</legend>
+        <p class="admin-hint">Yeni bir logo yükleyin (SVG, PNG, JPG veya WEBP — en fazla 2MB). Koyu zeminli site üzerinde okunaklı olması için açık renkli/beyaz bir logo tercih edin.</p>
+        <div class="admin-logo-preview">
+          <img src="<?= e(assetUrl(brandLogoUrl($s))) ?>" alt="Mevcut logo" class="admin-logo-current">
+        </div>
+        <label>Yeni logo dosyası<input type="file" name="logo_file" accept=".svg,.png,.jpg,.jpeg,.webp"></label>
+        <?php if (!empty($s['logo_path'])): ?>
+        <label class="admin-checkbox-inline"><input type="checkbox" name="remove_logo" value="1"> Özel logoyu kaldır, varsayılan CRC amblemine dön</label>
+        <?php endif; ?>
+      </fieldset>
+      <fieldset>
+        <legend>Yükleme Ekranı (Preloader)</legend>
+        <p class="admin-hint">Site açılırken kısa süreliğine görünen vinç animasyonu.</p>
+        <label class="admin-checkbox-inline"><input type="checkbox" name="preloader_enabled" value="1" <?= !empty($s['preloader_enabled']) ? 'checked' : '' ?>> Yükleme ekranını göster</label>
+        <div class="admin-row">
+          <label>Gösterim süresi (ms, en fazla 3000)<input type="number" name="preloader_duration" min="0" max="3000" step="100" value="<?= e((string) ($s['preloader_duration'] ?? 400)) ?>"></label>
+          <label>Alt yazı<input type="text" name="preloader_text" value="<?= e($s['preloader_text'] ?? '') ?>"></label>
+        </div>
+        <button type="submit" name="preloader_action" value="reset" class="admin-save admin-save-secondary" formnovalidate>Yükleme Ekranını Varsayılana Sıfırla</button>
+      </fieldset>
       <fieldset>
         <legend>Hero Videosu</legend>
         <label>YouTube video linki veya ID<input type="text" name="hero_video_id" value="<?= e($s['hero_video_id']) ?>" placeholder="https://youtu.be/XXXXXXXXXXX"></label>
