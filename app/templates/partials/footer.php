@@ -14,6 +14,9 @@
         <?php foreach ($site['menu'] as $item): ?>
         <li><a href="<?= e($item['url']) ?>"><?= e($item['label']) ?></a></li>
         <?php endforeach; ?>
+        <?php if (!empty($site['service_areas']['areas'])): ?>
+        <li><a href="/hizmet-bolgelerimiz">Hizmet Bölgelerimiz</a></li>
+        <?php endif; ?>
       </ul>
     </div>
     <div>

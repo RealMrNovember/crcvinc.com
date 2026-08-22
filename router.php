@@ -7,15 +7,16 @@ $root = __DIR__ . '/public_html';
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $file = realpath($root . $path);
 
-if ($file !== false && str_starts_with($file, realpath($root)) && is_file($file)) {
-    if (str_ends_with($file, '.php')) {
+$rootReal = realpath($root);
+if ($file !== false && strncmp($file, $rootReal, strlen($rootReal)) === 0 && is_file($file)) {
+    if (substr($file, -4) === '.php') {
         require $file;
         return true;
     }
     return false; // statik dosyayı sunucu servis etsin
 }
 
-if (str_starts_with($path, '/admin')) {
+if (strncmp($path, '/admin', 6) === 0) {
     require $root . '/admin/index.php';
     return true;
 }

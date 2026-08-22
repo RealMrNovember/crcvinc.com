@@ -11,6 +11,7 @@ function renderSitemap(array $site): void
         ['loc' => $origin . '/makine-parki', 'priority' => '0.8'],
         ['loc' => $origin . '/projeler', 'priority' => '0.8'],
         ['loc' => $origin . '/kurumsal', 'priority' => '0.6'],
+        ['loc' => $origin . '/hizmet-bolgelerimiz', 'priority' => '0.6'],
         ['loc' => $origin . '/blog', 'priority' => '0.6'],
         ['loc' => $origin . '/iletisim', 'priority' => '0.7'],
     ];

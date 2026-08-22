@@ -96,6 +96,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                         break;
                     case 'seo':
                         $site['settings']['seo_default_description'] = trim((string) ($_POST['seo_default_description'] ?? ''));
+                        $site['settings']['seo_keywords'] = trim((string) ($_POST['seo_keywords'] ?? ''));
                         $site['settings']['seo_gsc_verification'] = trim((string) ($_POST['seo_gsc_verification'] ?? ''));
                         $site['settings']['seo_ga_id'] = trim((string) ($_POST['seo_ga_id'] ?? ''));
                         if (!empty($_POST['remove_og_image'])) {
@@ -108,6 +109,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                                 $site['settings']['seo_og_image'] = $uploaded;
                             }
                         }
+                        $site['service_areas']['page_title'] = trim((string) ($_POST['areas_page_title'] ?? 'Hizmet Bölgelerimiz'));
+                        $site['service_areas']['page_intro'] = trim((string) ($_POST['areas_page_intro'] ?? ''));
+                        $site['service_areas']['areas'] = sanitizeServiceAreas($_POST);
                         break;
                     case 'texts':
                         $site['settings']['hero_kicker'] = trim((string) ($_POST['hero_kicker'] ?? ''));
@@ -627,6 +631,21 @@ function sanitizeHours(array $post): array
             continue;
         }
         $out[] = ['day' => $day, 'value' => trim((string) ($values[$i] ?? ''))];
+    }
+    return $out;
+}
+
+function sanitizeServiceAreas(array $post): array
+{
+    $names = $post['area_name'] ?? [];
+    $descs = $post['area_desc'] ?? [];
+    $out = [];
+    foreach ($names as $i => $name) {
+        $name = trim((string) $name);
+        if ($name === '') {
+            continue;
+        }
+        $out[] = ['name' => $name, 'desc' => trim((string) ($descs[$i] ?? ''))];
     }
     return $out;
 }

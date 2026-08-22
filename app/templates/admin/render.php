@@ -72,7 +72,7 @@ function renderAdminPanel(array $site, bool $saved, ?string $error): void
     <?php elseif ($activeTab === 'pages'): ?>
       <?php renderPagesTab($site['pages']); ?>
     <?php elseif ($activeTab === 'seo'): ?>
-      <?php renderSeoTab($settings); ?>
+      <?php renderSeoTab($settings, $site['service_areas'] ?? ['page_title' => 'Hizmet Bölgelerimiz', 'page_intro' => '', 'areas' => []]); ?>
     <?php elseif ($activeTab === 'account'): ?>
       <?php renderAccountTab(); ?>
     <?php endif; ?>
@@ -541,8 +541,9 @@ function renderPagesTab(array $pages): void
     <?php
 }
 
-function renderSeoTab(array $s): void
+function renderSeoTab(array $s, array $serviceAreas): void
 {
+    $areas = repeatRows($serviceAreas['areas'] ?? [], 8);
     ?>
     <h2>SEO</h2>
     <p class="admin-hint">Sitenin Google'da nasıl görüneceğini buradan yönetebilirsiniz. Site zaten arama motorlarına açık ve <code>sitemap.xml</code> otomatik güncelleniyor — bu ayarlar ek görünürlük ve takip içindir.</p>
@@ -554,6 +555,27 @@ function renderSeoTab(array $s): void
         <legend>Varsayılan Açıklama</legend>
         <p class="admin-hint">Sayfa kendi metni yoksa Google arama sonuçlarında bu açıklama gösterilir (150 karakter civarı önerilir).</p>
         <textarea name="seo_default_description" rows="2" class="admin-textarea-wide"><?= e($s['seo_default_description'] ?? '') ?></textarea>
+      </fieldset>
+
+      <fieldset>
+        <legend>Hedef Anahtar Kelimeler</legend>
+        <p class="admin-hint">Sitenizin hangi aramalarda bulunmasını istediğinizi tanımlar (virgülle ayırın). Google artık bunu doğrudan sıralama faktörü olarak kullanmıyor ama içerik stratejinizi ve bazı dizinleri/arama motorlarını etkiler.</p>
+        <input type="text" name="seo_keywords" value="<?= e($s['seo_keywords'] ?? '') ?>" placeholder="vinç kiralama, vinç kiralama ankara, mobil vinç kiralama">
+      </fieldset>
+
+      <fieldset>
+        <legend>Hizmet Bölgeleri</legend>
+        <p class="admin-hint">"/hizmet-bolgelerimiz" sayfasında ve ana sayfada listelenir — yerel SEO için Ankara'daki hizmet verdiğiniz ilçeleri tanıtır.</p>
+        <div class="admin-row">
+          <label>Sayfa başlığı<input type="text" name="areas_page_title" value="<?= e($serviceAreas['page_title'] ?? 'Hizmet Bölgelerimiz') ?>"></label>
+          <label>Sayfa alt yazısı<input type="text" name="areas_page_intro" value="<?= e($serviceAreas['page_intro'] ?? '') ?>"></label>
+        </div>
+        <?php foreach ($areas as $area): ?>
+        <div class="admin-row">
+          <label>İlçe / Bölge<input type="text" name="area_name[]" value="<?= e($area['name'] ?? '') ?>"></label>
+          <label>Açıklama<input type="text" name="area_desc[]" value="<?= e($area['desc'] ?? '') ?>"></label>
+        </div>
+        <?php endforeach; ?>
       </fieldset>
 
       <fieldset>

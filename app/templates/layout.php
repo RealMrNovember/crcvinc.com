@@ -19,6 +19,9 @@ $seoImageUrl = $seoImage !== '' ? (str_starts_with($seoImage, 'http') ? $seoImag
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= e($seoTitle) ?></title>
 <meta name="description" content="<?= e($seoDescription) ?>">
+<?php if (!empty($settings['seo_keywords'])): ?>
+<meta name="keywords" content="<?= e($settings['seo_keywords']) ?>">
+<?php endif; ?>
 <link rel="canonical" href="<?= e($seoCanonical) ?>">
 <meta name="robots" content="index, follow">
 <?php if (!empty($settings['seo_gsc_verification'])): ?>

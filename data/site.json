@@ -8,7 +8,7 @@
         "preloader_enabled": true,
         "preloader_duration": 400,
         "preloader_text": "CRC Vinç",
-        "hero_kicker": "7/24 Vinç Kiralama & Ağır Kaldırma",
+        "hero_kicker": "Ankara 7/24 Vinç Kiralama & Ağır Kaldırma",
         "hero_title": "Her Yükün Altından Kalkarız",
         "hero_subtitle": "Mobil vinç kiralama, proje taşımacılığı ve yedek parça tedarikinde 7/24 çözüm ortağınız.",
         "hero_cta_primary": "Hemen Teklif Al",
@@ -26,7 +26,8 @@
         "seo_default_description": "CRC Vinç — Ankara merkezli mobil vinç kiralama, sepetli platform, proje taşımacılığı ve yedek parça tedariki. 7/24 hizmet, sertifikalı operatör, sigortalı operasyon.",
         "seo_og_image": "",
         "seo_gsc_verification": "",
-        "seo_ga_id": ""
+        "seo_ga_id": "",
+        "seo_keywords": "vinç kiralama, vinç kiralama ankara, mobil vinç kiralama, sepetli vinç kiralama, kiralık vinç, ağır kaldırma ankara, proje taşımacılığı, yedek parça tedariki"
     },
     "menu": [
         {
@@ -183,8 +184,8 @@
             "logo": ""
         },
         {
-            "name": "Referans F",
-            "logo": ""
+            "name": "NIKE",
+            "logo": "/assets/img/uploads/bedf7f74bec39b18.svg"
         }
     ],
     "home": {
@@ -233,6 +234,40 @@
                 "image": "",
                 "date": "2026-08-01",
                 "published": true
+            }
+        ]
+    },
+    "service_areas": {
+        "page_title": "Hizmet Bölgelerimiz",
+        "page_intro": "Ankara ve çevresindeki sanayi, lojistik ve inşaat bölgelerinde 7/24 vinç kiralama ve ağır kaldırma hizmeti veriyoruz.",
+        "areas": [
+            {
+                "name": "Yenimahalle",
+                "desc": "Merkez üssümüz İvedik OSB'de — Yenimahalle ve çevresine en hızlı müdahale süresi."
+            },
+            {
+                "name": "Sincan",
+                "desc": "Sincan OSB ve Anadolu OSB'deki fabrika ve depolama tesislerine düzenli hizmet veriyoruz."
+            },
+            {
+                "name": "Kahramankazan",
+                "desc": "Ankara Lojistik Üssü çevresindeki depolama ve yükleme-boşaltma operasyonlarında yer alıyoruz."
+            },
+            {
+                "name": "Polatlı",
+                "desc": "Polatlı OSB'deki sanayi tesislerine proje bazlı mobil vinç ve taşımacılık desteği sağlıyoruz."
+            },
+            {
+                "name": "Akyurt",
+                "desc": "Gelişen lojistik yatırım bölgesinde saha operasyonlarına destek veriyoruz."
+            },
+            {
+                "name": "Etimesgut",
+                "desc": "Etimesgut ve çevresindeki inşaat ve montaj işlerinde hizmetinizdeyiz."
+            },
+            {
+                "name": "Çankaya",
+                "desc": "Şehir merkezi ve çevresindeki cephe, montaj ve bakım işleri için sepetli platform ve mobil vinç desteği."
             }
         ]
     },

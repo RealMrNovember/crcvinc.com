@@ -153,6 +153,13 @@ switch ($path) {
         ]);
         break;
 
+    case '/hizmet-bolgelerimiz':
+        renderPage('service-areas', [
+            'pageTitle' => $site['service_areas']['page_title'] ?? 'Hizmet Bölgelerimiz',
+            'metaDescription' => excerptFor($site['service_areas']['page_intro'] ?? ''),
+        ]);
+        break;
+
     case '/iletisim':
         require APP_DIR . '/contact.php';
         handleContactPage();

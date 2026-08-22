@@ -275,6 +275,14 @@ a { color: var(--accent); text-decoration: none; }
 .safety-item strong { display: block; font-family: var(--heading); text-transform: uppercase; font-size: 1.1rem; }
 .safety-item span { color: var(--text-muted); font-size: 0.9rem; }
 
+/* ---------- Hizmet bölgeleri ---------- */
+.area-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 32px; }
+.area-chip {
+  padding: 8px 18px; border-radius: 999px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--text); font-weight: 600; font-size: 0.9rem;
+}
+.area-card p { color: var(--text-muted); font-size: 0.93rem; }
+
 /* ---------- CTA bandı ---------- */
 .cta-band {
   background:

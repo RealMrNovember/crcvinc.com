@@ -107,6 +107,26 @@ $videoId = youtubeId($settings['hero_video_id'] ?? '');
 </section>
 <?php endif; ?>
 
+<!-- HİZMET BÖLGELERİ -->
+<?php if (!empty($site['service_areas']['areas'])): ?>
+<section class="section service-areas-teaser">
+  <div class="container">
+    <div class="section-head reveal" data-reveal>
+      <p class="section-kicker">Hizmet Bölgelerimiz</p>
+      <h2>Ankara ve Çevresinde Yanınızdayız</h2>
+    </div>
+    <div class="area-chips reveal" data-reveal data-reveal-delay="1">
+      <?php foreach ($site['service_areas']['areas'] as $area): ?>
+      <span class="area-chip"><?= e($area['name'] ?? '') ?></span>
+      <?php endforeach; ?>
+    </div>
+    <div class="section-cta reveal" data-reveal data-reveal-delay="2">
+      <a class="btn btn-ghost" href="/hizmet-bolgelerimiz">Tüm Hizmet Bölgelerini Gör</a>
+    </div>
+  </div>
+</section>
+<?php endif; ?>
+
 <!-- CTA -->
 <section class="cta-band">
   <div class="container cta-inner reveal" data-reveal>
