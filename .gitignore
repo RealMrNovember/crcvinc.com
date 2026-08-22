@@ -1,5 +1,6 @@
 data/admin.json
 data/messages.json
+data/login_throttle.json
 *.log
 .DS_Store
 Thumbs.db

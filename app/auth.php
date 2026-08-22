@@ -64,6 +64,82 @@ function changeAdminCredentials(string $currentPassword, string $newUsername, ?s
     return [true, ''];
 }
 
+/**
+ * IP başına başarısız giriş denemesi sayacı — session çerezini silen saldırgana karşı ek koruma.
+ * Cloudflare arkasında CF-Connecting-IP kullanılır (istemci tarafından taklit edilemez).
+ */
+const LOGIN_THROTTLE_WINDOW = 900; // 15 dakika
+const LOGIN_THROTTLE_LIMIT = 10;
+
+function loginThrottleFile(): string
+{
+    return DATA_DIR . '/login_throttle.json';
+}
+
+function clientIp(): string
+{
+    if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+        return (string) $_SERVER['HTTP_CF_CONNECTING_IP'];
+    }
+    return (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+}
+
+function readLoginThrottle(): array
+{
+    $raw = @file_get_contents(loginThrottleFile());
+    $decoded = $raw !== false ? json_decode($raw, true) : null;
+    return is_array($decoded) ? $decoded : [];
+}
+
+/** Yazarken pencere dışına çıkmış eski girdileri de temizler ki dosya büyümesin. */
+function writeLoginThrottle(array $data): void
+{
+    $now = time();
+    foreach ($data as $ip => $entry) {
+        if (($now - (int) ($entry['first'] ?? 0)) > LOGIN_THROTTLE_WINDOW) {
+            unset($data[$ip]);
+        }
+    }
+    $json = json_encode($data, JSON_PRETTY_PRINT);
+    if ($json !== false) {
+        file_put_contents(loginThrottleFile(), $json, LOCK_EX);
+    }
+}
+
+function isIpThrottled(): bool
+{
+    $entry = readLoginThrottle()[clientIp()] ?? null;
+    if ($entry === null || (time() - (int) $entry['first']) > LOGIN_THROTTLE_WINDOW) {
+        return false;
+    }
+    return (int) $entry['count'] >= LOGIN_THROTTLE_LIMIT;
+}
+
+function recordLoginFailure(): void
+{
+    $ip = clientIp();
+    $data = readLoginThrottle();
+    $now = time();
+    $entry = $data[$ip] ?? null;
+    if ($entry === null || ($now - (int) $entry['first']) > LOGIN_THROTTLE_WINDOW) {
+        $entry = ['count' => 0, 'first' => $now];
+    }
+    $entry['count'] = (int) $entry['count'] + 1;
+    $entry['last'] = $now;
+    $data[$ip] = $entry;
+    writeLoginThrottle($data);
+}
+
+function clearLoginFailures(): void
+{
+    $data = readLoginThrottle();
+    $ip = clientIp();
+    if (isset($data[$ip])) {
+        unset($data[$ip]);
+        writeLoginThrottle($data);
+    }
+}
+
 function verifyAdminCredentials(string $username, string $password): bool
 {
     if (!adminCredentialsExist()) {
@@ -80,8 +156,26 @@ function startAdminSession(): void
 {
     if (session_status() !== PHP_SESSION_ACTIVE) {
         session_name('crcvinc_admin');
+        session_set_cookie_params([
+            'lifetime' => 0,
+            'path' => '/',
+            'domain' => '',
+            'secure' => isSecureRequest(),
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
         session_start();
     }
+}
+
+/** HTTPS üzerinden mi geliniyor — doğrudan bağlantıda ve Cloudflare arkasında (X-Forwarded-Proto) çalışır. */
+function isSecureRequest(): bool
+{
+    if (!empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off') {
+        return true;
+    }
+    return !empty($_SERVER['HTTP_X_FORWARDED_PROTO'])
+        && strtolower((string) $_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https';
 }
 
 function isAdminLoggedIn(): bool

@@ -30,6 +30,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         } elseif (!saveAdminCredentials($username, $password)) {
             $error = 'Kaydedilemedi. data/ klasörüne yazma izni olduğundan emin olun.';
         } else {
+            session_regenerate_id(true);
             $_SESSION['admin_authenticated'] = true;
             $_SESSION['admin_user'] = $username;
             header('Location: /admin/');

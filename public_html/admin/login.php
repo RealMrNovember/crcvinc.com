@@ -23,23 +23,28 @@ $lastAttempt = &$_SESSION['login_last_attempt'];
 $lastAttempt ??= 0;
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
-    // Basit yavaşlatma: art arda denemede kısa bekleme uygular (kaba kuvvet saldırısını zorlaştırır).
+    // Session bazlı hızlı yavaşlatma + IP bazlı kalıcı sayaç (çerezini silen saldırgana karşı).
     if ($attempts >= 5 && (time() - $lastAttempt) < 30) {
         $error = 'Çok fazla deneme yapıldı. Lütfen 30 saniye sonra tekrar deneyin.';
+    } elseif (isIpThrottled()) {
+        $error = 'Bu IP adresinden çok fazla başarısız deneme yapıldı. Lütfen 15 dakika sonra tekrar deneyin.';
     } elseif (!checkCsrf()) {
         $error = 'Oturum süresi doldu, sayfayı yenileyip tekrar deneyin.';
     } else {
         $username = trim((string) ($_POST['username'] ?? ''));
         $password = (string) ($_POST['password'] ?? '');
         if (verifyAdminCredentials($username, $password)) {
+            session_regenerate_id(true);
             $_SESSION['admin_authenticated'] = true;
             $_SESSION['admin_user'] = $username;
             $attempts = 0;
+            clearLoginFailures();
             header('Location: /admin/');
             exit;
         }
         $attempts++;
         $lastAttempt = time();
+        recordLoginFailure();
         $error = 'Kullanıcı adı veya şifre hatalı.';
     }
 }
