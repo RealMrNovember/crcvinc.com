@@ -1,0 +1,160 @@
+{
+    "settings": {
+        "site_name": "CRC Vinç",
+        "legal_name": "CRC Vinç Kiralama Yedek Parça İthalat İhracat San. Tic. Ltd. Şti.",
+        "tagline": "Ağır Kaldırmanın Güvenilir Gücü",
+        "hero_video_id": "",
+        "hero_title": "Her Yükün Altından Kalkarız",
+        "hero_subtitle": "Mobil vinç kiralama, proje taşımacılığı ve yedek parça tedarikinde 7/24 çözüm ortağınız.",
+        "hero_cta_primary": "Hemen Teklif Al",
+        "hero_cta_secondary": "Makine Parkımız",
+        "phone": "+905000000000",
+        "phone_display": "0500 000 00 00",
+        "whatsapp": "905000000000",
+        "email": "info@crcvinc.com",
+        "address": "İstanbul, Türkiye",
+        "footer_text": "CRC Vinç — İstanbul merkezli vinç kiralama ve yedek parça tedarik firması.",
+        "instagram": "",
+        "linkedin": "",
+        "map_embed": ""
+    },
+    "menu": [
+        {
+            "label": "Ana Sayfa",
+            "url": "/"
+        },
+        {
+            "label": "Hizmetler",
+            "url": "/hizmetler"
+        },
+        {
+            "label": "Makine Parkı",
+            "url": "/makine-parki"
+        },
+        {
+            "label": "Projeler",
+            "url": "/projeler"
+        },
+        {
+            "label": "Kurumsal",
+            "url": "/kurumsal"
+        },
+        {
+            "label": "İletişim",
+            "url": "/iletisim"
+        }
+    ],
+    "counters": [
+        {
+            "value": 10,
+            "suffix": "+",
+            "label": "Yıllık Tecrübe"
+        },
+        {
+            "value": 250,
+            "suffix": "+",
+            "label": "Tamamlanan Proje"
+        },
+        {
+            "value": 20,
+            "suffix": "+",
+            "label": "Araçlık Makine Parkı"
+        },
+        {
+            "value": 500,
+            "suffix": " Ton",
+            "label": "Kaldırma Kapasitesi"
+        }
+    ],
+    "services": [
+        {
+            "icon": "crane",
+            "title": "Mobil Vinç Kiralama",
+            "desc": "Saatlik, günlük ve proje bazlı mobil vinç kiralama. Sertifikalı operatör ve sigortalı operasyon."
+        },
+        {
+            "icon": "basket",
+            "title": "Sepetli Platform",
+            "desc": "Yüksekte güvenli çalışma için sepetli platform kiralama; cephe, montaj ve bakım işleri."
+        },
+        {
+            "icon": "truck",
+            "title": "Proje Taşımacılığı",
+            "desc": "Gabari dışı ve ağır yüklerin planlanması, taşınması ve yerine montajı."
+        },
+        {
+            "icon": "gear",
+            "title": "Yedek Parça Tedariki",
+            "desc": "Vinç ve iş makineleri için ithalat/ihracat kanallarıyla hızlı yedek parça tedariki."
+        }
+    ],
+    "fleet": [
+        {
+            "title": "Mobil Vinçler",
+            "capacity": "25 – 500 ton",
+            "desc": "Farklı tonaj sınıflarında, şehir içi ve saha operasyonlarına uygun mobil vinç filosu.",
+            "image": ""
+        },
+        {
+            "title": "Sepetli Platformlar",
+            "capacity": "18 – 45 metre",
+            "desc": "Eklemli ve teleskopik platformlarla yüksekte güvenli erişim.",
+            "image": ""
+        },
+        {
+            "title": "Hiyap Vinçler",
+            "capacity": "5 – 20 ton",
+            "desc": "Yükleme, indirme ve taşıma işlerini tek araçla çözen hiyap filosu.",
+            "image": ""
+        }
+    ],
+    "projects": [
+        {
+            "title": "Örnek Proje — Endüstriyel Montaj",
+            "client": "Müşteri Adı",
+            "stat": "120 ton",
+            "desc": "Fabrika sahasında 120 tonluk ekipmanın kaldırılması ve yerine montajı.",
+            "image": ""
+        },
+        {
+            "title": "Örnek Proje — Enerji Sahası",
+            "client": "Müşteri Adı",
+            "stat": "85 ton",
+            "desc": "Enerji santrali sahasında türbin ekipmanlarının indirilmesi ve konumlandırılması.",
+            "image": ""
+        },
+        {
+            "title": "Örnek Proje — Şantiye Operasyonu",
+            "client": "Müşteri Adı",
+            "stat": "200 ton",
+            "desc": "Şantiye sahasında prefabrik elemanların yüksek tonajlı vinçle montajı.",
+            "image": ""
+        }
+    ],
+    "clients": [
+        "Referans A",
+        "Referans B",
+        "Referans C",
+        "Referans D",
+        "Referans E",
+        "Referans F"
+    ],
+    "pages": {
+        "kurumsal": {
+            "title": "Kurumsal",
+            "body": "CRC Vinç, İstanbul merkezli vinç kiralama, yedek parça ve ithalat/ihracat firmasıdır.\n\nSertifikalı operatörlerimiz, sigortalı operasyonlarımız ve büyüyen makine parkımızla sanayi, inşaat ve enerji sektörlerine 7/24 hizmet veriyoruz.\n\nİş sağlığı ve güvenliği, her operasyonumuzun birinci önceliğidir."
+        },
+        "hizmetler": {
+            "title": "Hizmetlerimiz",
+            "body": "Kaldırma, taşıma ve montaj ihtiyaçlarınız için uçtan uca çözüm sunuyoruz."
+        },
+        "makine-parki": {
+            "title": "Makine Parkı",
+            "body": "Düzenli bakımlı, günlük kontrolden geçen araçlarımızla sahadayız."
+        },
+        "projeler": {
+            "title": "Projelerimiz",
+            "body": "Tamamladığımız işlerden örnekler."
+        }
+    }
+}

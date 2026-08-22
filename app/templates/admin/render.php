@@ -1,0 +1,276 @@
+<?php
+declare(strict_types=1);
+
+/** Tek dosyalık admin paneli görünümü: sekmeli formlar, her sekme kendi POST'unu tab=... ile ayırt eder. */
+function renderAdminPanel(array $site, bool $saved, ?string $error): void
+{
+    $settings = $site['settings'];
+    $activeTab = $_GET['tab'] ?? 'settings';
+    $tabs = [
+        'settings' => 'Genel & Hero',
+        'menu' => 'Menü',
+        'counters' => 'Sayaçlar',
+        'services' => 'Hizmetler',
+        'fleet' => 'Makine Parkı',
+        'projects' => 'Projeler',
+        'clients' => 'Referanslar',
+        'pages' => 'Sayfa Metinleri',
+    ];
+    if (!isset($tabs[$activeTab])) {
+        $activeTab = 'settings';
+    }
+    ?>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yönetim Paneli — CRC Vinç</title>
+<link rel="stylesheet" href="/assets/css/admin.css">
+</head>
+<body class="admin-body">
+<header class="admin-topbar">
+  <span class="admin-brand">CRC Vinç · Yönetim Paneli</span>
+  <div class="admin-topbar-actions">
+    <a href="/" target="_blank" rel="noopener">Siteyi Görüntüle ↗</a>
+    <a href="/admin/logout.php">Çıkış Yap</a>
+  </div>
+</header>
+<div class="admin-shell">
+  <nav class="admin-tabs">
+    <?php foreach ($tabs as $key => $label): ?>
+    <a href="?tab=<?= e($key) ?>" class="<?= $key === $activeTab ? 'is-active' : '' ?>"><?= e($label) ?></a>
+    <?php endforeach; ?>
+  </nav>
+  <main class="admin-content">
+    <?php if ($saved): ?><div class="admin-notice admin-notice-ok">Değişiklikler kaydedildi.</div><?php endif; ?>
+    <?php if ($error): ?><div class="admin-notice admin-notice-error"><?= e($error) ?></div><?php endif; ?>
+
+    <?php if ($activeTab === 'settings'): ?>
+      <?php renderSettingsTab($settings); ?>
+    <?php elseif ($activeTab === 'menu'): ?>
+      <?php renderMenuTab($site['menu']); ?>
+    <?php elseif ($activeTab === 'counters'): ?>
+      <?php renderCountersTab($site['counters']); ?>
+    <?php elseif ($activeTab === 'services'): ?>
+      <?php renderServicesTab($site['services']); ?>
+    <?php elseif ($activeTab === 'fleet'): ?>
+      <?php renderFleetTab($site['fleet']); ?>
+    <?php elseif ($activeTab === 'projects'): ?>
+      <?php renderProjectsTab($site['projects']); ?>
+    <?php elseif ($activeTab === 'clients'): ?>
+      <?php renderClientsTab($site['clients']); ?>
+    <?php elseif ($activeTab === 'pages'): ?>
+      <?php renderPagesTab($site['pages']); ?>
+    <?php endif; ?>
+  </main>
+</div>
+</body>
+</html>
+<?php
+}
+
+function renderSettingsTab(array $s): void
+{
+    ?>
+    <h2>Genel Bilgiler &amp; Hero</h2>
+    <p class="admin-hint">Hero alanındaki YouTube videosunu buradan değiştirebilirsiniz — tam link (ör. https://youtu.be/...) veya sadece video ID'sini yapıştırmanız yeterli.</p>
+    <form method="post">
+      <?= csrfField() ?>
+      <input type="hidden" name="tab" value="settings">
+      <fieldset>
+        <legend>Hero Videosu</legend>
+        <label>YouTube video linki veya ID<input type="text" name="hero_video_id" value="<?= e($s['hero_video_id']) ?>" placeholder="https://youtu.be/XXXXXXXXXXX"></label>
+      </fieldset>
+      <fieldset>
+        <legend>Hero Metinleri</legend>
+        <label>Başlık<input type="text" name="hero_title" value="<?= e($s['hero_title']) ?>"></label>
+        <label>Alt başlık<textarea name="hero_subtitle" rows="2"><?= e($s['hero_subtitle']) ?></textarea></label>
+        <div class="admin-row">
+          <label>Birincil buton metni<input type="text" name="hero_cta_primary" value="<?= e($s['hero_cta_primary']) ?>"></label>
+          <label>İkincil buton metni<input type="text" name="hero_cta_secondary" value="<?= e($s['hero_cta_secondary']) ?>"></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Firma &amp; İletişim</legend>
+        <div class="admin-row">
+          <label>Site adı<input type="text" name="site_name" value="<?= e($s['site_name']) ?>"></label>
+          <label>Slogan<input type="text" name="tagline" value="<?= e($s['tagline']) ?>"></label>
+        </div>
+        <label>Resmi unvan<input type="text" name="legal_name" value="<?= e($s['legal_name']) ?>"></label>
+        <div class="admin-row">
+          <label>Telefon (tel: linki için, ör. +905000000000)<input type="text" name="phone" value="<?= e($s['phone']) ?>"></label>
+          <label>Telefon (görünen)<input type="text" name="phone_display" value="<?= e($s['phone_display']) ?>"></label>
+        </div>
+        <div class="admin-row">
+          <label>WhatsApp numarası (ülke koduyla, + işaretsiz)<input type="text" name="whatsapp" value="<?= e($s['whatsapp']) ?>"></label>
+          <label>E-posta<input type="email" name="email" value="<?= e($s['email']) ?>"></label>
+        </div>
+        <label>Adres<input type="text" name="address" value="<?= e($s['address']) ?>"></label>
+        <div class="admin-row">
+          <label>Instagram linki<input type="url" name="instagram" value="<?= e($s['instagram']) ?>"></label>
+          <label>LinkedIn linki<input type="url" name="linkedin" value="<?= e($s['linkedin']) ?>"></label>
+        </div>
+        <label>Google Harita gömme kodu (isteğe bağlı, iframe)<textarea name="map_embed" rows="2"><?= e($s['map_embed']) ?></textarea></label>
+        <label>Footer açıklama metni<textarea name="footer_text" rows="2"><?= e($s['footer_text']) ?></textarea></label>
+      </fieldset>
+      <button type="submit" class="admin-save">Kaydet</button>
+    </form>
+    <?php
+}
+
+function renderMenuTab(array $menu): void
+{
+    ?>
+    <h2>Menü</h2>
+    <p class="admin-hint">Boş bırakılan satırlar kaydedilirken silinir.</p>
+    <form method="post">
+      <?= csrfField() ?>
+      <input type="hidden" name="tab" value="menu">
+      <?php foreach (repeatRows($menu, 8) as $item): ?>
+      <div class="admin-row">
+        <label>Başlık<input type="text" name="menu_label[]" value="<?= e($item['label'] ?? '') ?>"></label>
+        <label>Link (ör. /hizmetler)<input type="text" name="menu_url[]" value="<?= e($item['url'] ?? '') ?>"></label>
+      </div>
+      <?php endforeach; ?>
+      <button type="submit" class="admin-save">Kaydet</button>
+    </form>
+    <?php
+}
+
+function renderCountersTab(array $counters): void
+{
+    ?>
+    <h2>Sayaçlar</h2>
+    <form method="post">
+      <?= csrfField() ?>
+      <input type="hidden" name="tab" value="counters">
+      <?php foreach (repeatRows($counters, 6) as $item): ?>
+      <div class="admin-row admin-row-3">
+        <label>Sayı<input type="number" name="counter_value[]" value="<?= e((string) ($item['value'] ?? '')) ?>"></label>
+        <label>Ek (ör. +, Ton)<input type="text" name="counter_suffix[]" value="<?= e($item['suffix'] ?? '') ?>"></label>
+        <label>Etiket<input type="text" name="counter_label[]" value="<?= e($item['label'] ?? '') ?>"></label>
+      </div>
+      <?php endforeach; ?>
+      <button type="submit" class="admin-save">Kaydet</button>
+    </form>
+    <?php
+}
+
+function renderServicesTab(array $services): void
+{
+    ?>
+    <h2>Hizmetler</h2>
+    <form method="post">
+      <?= csrfField() ?>
+      <input type="hidden" name="tab" value="services">
+      <?php foreach (repeatRows($services, 8) as $item): ?>
+      <div class="admin-card-row">
+        <div class="admin-row">
+          <label>İkon
+            <select name="service_icon[]">
+              <?php foreach (['crane' => 'Vinç', 'basket' => 'Sepetli Platform', 'truck' => 'Kamyon', 'gear' => 'Dişli'] as $val => $label): ?>
+              <option value="<?= $val ?>" <?= ($item['icon'] ?? 'crane') === $val ? 'selected' : '' ?>><?= $label ?></option>
+              <?php endforeach; ?>
+            </select>
+          </label>
+          <label>Başlık<input type="text" name="service_title[]" value="<?= e($item['title'] ?? '') ?>"></label>
+        </div>
+        <label>Açıklama<textarea name="service_desc[]" rows="2"><?= e($item['desc'] ?? '') ?></textarea></label>
+      </div>
+      <?php endforeach; ?>
+      <button type="submit" class="admin-save">Kaydet</button>
+    </form>
+    <?php
+}
+
+function renderFleetTab(array $fleet): void
+{
+    ?>
+    <h2>Makine Parkı</h2>
+    <p class="admin-hint">Görsel alanına, medya yöneticinize yüklediğiniz görselin adres (URL) yolunu yazın — ör. /assets/img/mobil-vinc.jpg</p>
+    <form method="post">
+      <?= csrfField() ?>
+      <input type="hidden" name="tab" value="fleet">
+      <?php foreach (repeatRows($fleet, 8) as $item): ?>
+      <div class="admin-card-row">
+        <div class="admin-row">
+          <label>Başlık<input type="text" name="fleet_title[]" value="<?= e($item['title'] ?? '') ?>"></label>
+          <label>Kapasite (ör. 25–500 ton)<input type="text" name="fleet_capacity[]" value="<?= e($item['capacity'] ?? '') ?>"></label>
+        </div>
+        <label>Açıklama<textarea name="fleet_desc[]" rows="2"><?= e($item['desc'] ?? '') ?></textarea></label>
+        <label>Görsel URL<input type="text" name="fleet_image[]" value="<?= e($item['image'] ?? '') ?>"></label>
+      </div>
+      <?php endforeach; ?>
+      <button type="submit" class="admin-save">Kaydet</button>
+    </form>
+    <?php
+}
+
+function renderProjectsTab(array $projects): void
+{
+    ?>
+    <h2>Projeler</h2>
+    <form method="post">
+      <?= csrfField() ?>
+      <input type="hidden" name="tab" value="projects">
+      <?php foreach (repeatRows($projects, 9) as $item): ?>
+      <div class="admin-card-row">
+        <div class="admin-row">
+          <label>Başlık<input type="text" name="project_title[]" value="<?= e($item['title'] ?? '') ?>"></label>
+          <label>Müşteri<input type="text" name="project_client[]" value="<?= e($item['client'] ?? '') ?>"></label>
+        </div>
+        <div class="admin-row">
+          <label>Rakam (ör. 120 ton)<input type="text" name="project_stat[]" value="<?= e($item['stat'] ?? '') ?>"></label>
+          <label>Görsel URL<input type="text" name="project_image[]" value="<?= e($item['image'] ?? '') ?>"></label>
+        </div>
+        <label>Açıklama<textarea name="project_desc[]" rows="2"><?= e($item['desc'] ?? '') ?></textarea></label>
+      </div>
+      <?php endforeach; ?>
+      <button type="submit" class="admin-save">Kaydet</button>
+    </form>
+    <?php
+}
+
+function renderClientsTab(array $clients): void
+{
+    ?>
+    <h2>Referans Logoları / İsimleri</h2>
+    <p class="admin-hint">Her satıra bir referans adı yazın.</p>
+    <form method="post">
+      <?= csrfField() ?>
+      <input type="hidden" name="tab" value="clients">
+      <textarea name="clients_raw" rows="10" class="admin-textarea-wide"><?= e(implode("\n", $clients)) ?></textarea>
+      <button type="submit" class="admin-save">Kaydet</button>
+    </form>
+    <?php
+}
+
+function renderPagesTab(array $pages): void
+{
+    ?>
+    <h2>Sayfa Metinleri</h2>
+    <form method="post">
+      <?= csrfField() ?>
+      <input type="hidden" name="tab" value="pages">
+      <?php foreach ($pages as $slug => $page): ?>
+      <fieldset>
+        <legend><?= e($page['title'] ?? $slug) ?> (/<?= e($slug) ?>)</legend>
+        <label>Başlık<input type="text" name="page_title_<?= e($slug) ?>" value="<?= e($page['title'] ?? '') ?>"></label>
+        <label>Metin<textarea name="page_body_<?= e($slug) ?>" rows="5"><?= e($page['body'] ?? '') ?></textarea></label>
+      </fieldset>
+      <?php endforeach; ?>
+      <button type="submit" class="admin-save">Kaydet</button>
+    </form>
+    <?php
+}
+
+/** Liste + boş satırlar döndürür ki formda her zaman birkaç ek boş kayıt alanı görünsün. */
+function repeatRows(array $items, int $minTotal): array
+{
+    $items = array_values($items);
+    while (count($items) < $minTotal) {
+        $items[] = [];
+    }
+    return $items;
+}

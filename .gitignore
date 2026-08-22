@@ -1,0 +1,10 @@
+data/admin.json
+data/messages.json
+*.log
+.DS_Store
+Thumbs.db
+node_modules/
+
+# Hosting erişim bilgileri (DirectAdmin URL, sunucu IP, mail sunucu adları) —
+# repo PUBLIC olduğu için asla commit'lenmemeli.
+info.md

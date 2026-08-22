@@ -1,0 +1,11 @@
+Options -Indexes
+
+RewriteEngine On
+
+# Gerçek dosya ve klasörler (assets, admin) doğrudan servis edilir
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Diğer her şey front controller'a
+RewriteRule ^ index.php [L]
